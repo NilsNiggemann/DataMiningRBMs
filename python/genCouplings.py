@@ -23,7 +23,7 @@ def makeSamples(nsamples=1, savefile='couplings'+str(SEED)+'.csv'):
             writer.writerow(couplings)
 
 def main():
-    nsamples = 10
+    nsamples = 1000
     makeSamples(nsamples)
     
     
