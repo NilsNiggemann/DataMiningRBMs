@@ -27,12 +27,18 @@ Only needs to be run once after setting the number of samples (~1000) in the mai
 ## utils.helpers.makeJmat
 not requried for the end user
 
-## parseCouplings.py
-Uses the generated couplings from the stored csv file and creates a two lists of size nsamples each
-1) Jlist : each Jlist[i] contains total_bonds//2 Jx matrices and total_bonds//2 Jy matrices, that are themselves of size 3x3.
-2) hlist : each hlist[i] contains total_sites number of size 3 vectors containing {hx,hy,hz}. 
+## parseCouplings.py Uses the generated couplings from the stored csv file and
+creates a two lists of size nsamples each 
+1) Jlist : each Jlist[i] contains in
+the first half total_bonds//2 Jx matrices and total_bonds//2 Jy matrices in the
+second half, that are themselves of size 3x3, representing the different
+J_{\alpha\beta} 
+2) hlist : each hlist[i] contains total_sites number of size 3
+vectors containing {hx,hy,hz}. 
 
-There is an option to turn off magnetic fields, in which case the random numbers corresponding to h are just ignored, but still generated, so that they can be reproduced with the same SEED if required. 
+There is an option to turn off magnetic fields, in which case the random
+numbers corresponding to h are just ignored, but still generated, so that they
+can be reproduced with the same SEED if required. 
 
 
 
