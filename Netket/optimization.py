@@ -1,6 +1,35 @@
 import numpy as np
 import netket as nk
 from netket.operator.spin import sigmax, sigmay, sigmaz
+import h5py
+import json
+
+def construct_hamiltonian_bonds(Jijalphabeta, h, bonds):
+    N = h.shape[1]
+    hilbert = nk.hilbert.Spin(s=0.5, N=N)
+    pauli = [sigmax, sigmay, sigmaz]
+
+    # Interaction terms
+    interaction_terms = [
+        Jijalphabeta[alpha, beta, i, j] * pauli[alpha](hilbert,i) * pauli[beta](hilbert,j)
+        for (i,j) in bonds
+        for j in range(i,N)
+        for alpha in range(3)
+        for beta in range(3)
+        if np.abs(Jijalphabeta[i, j, alpha, beta]) > 1e-12
+    ]
+
+    # Local field terms
+    field_terms = [
+        h[alpha, i] * pauli[alpha](hilbert, i)
+        for i in range(N)
+        for alpha in range(3)
+        if np.abs(h[alpha, i]) > 1e-12
+    ]
+
+    ha = sum(interaction_terms, nk.operator.LocalOperator(hilbert)) + sum(field_terms, nk.operator.LocalOperator(hilbert))
+    ha = 0.5*(ha + ha.H)  # Ensure Hermiticity
+    return ha
 def construct_hamiltonian(Jijalphabeta, h):
     N = h.shape[1]
     hilbert = nk.hilbert.Spin(s=0.5, N=N)
@@ -28,38 +57,90 @@ def construct_hamiltonian(Jijalphabeta, h):
     ha = 0.5*(ha + ha.H)  # Ensure Hermiticity
     return ha
 
+DEFAULT_PARAMS = {
+        "alpha": 1,  # Hidden unit density
+        "learning_rate": 0.01,
+        "n_iter": 200,
+        "diag_shift": 0.01,
+        "show_progress": False,
+        "out": None,  # Output filename prefix
+    }
+
 def optimize_rbm(H, params):
     # Hilbert space from Hamiltonian
-    hilbert = H.hilbert
-    alpha = params.get("alpha", 1)  # Hidden unit density
+    # Use DEFAULT_PARAMS as base, override with params
+    merged_params = {**DEFAULT_PARAMS, **params}
+    alpha = merged_params["alpha"]
+    learning_rate = merged_params["learning_rate"]
+    n_iter = merged_params["n_iter"]
+    diag_shift = merged_params["diag_shift"]
+    show_progress = merged_params["show_progress"]
+    out = merged_params["out"]
 
-    # Define the RBM model
+    hilbert = H.hilbert
     model = nk.models.RBM(alpha=alpha, use_visible_bias=True, use_hidden_bias=True)
 
-    # Extract kwargs from params with defaults
-    learning_rate = params.get("learning_rate", 0.01)
-    n_iter = params.get("n_iter", 200)
-
-    # Variational state
     vstate = nk.vqs.FullSumState(hilbert, model)
 
-    # Optimizer
     optimizer = nk.optimizer.Sgd(learning_rate=learning_rate)
 
-    # Stochastic Reconfiguration
-    diag_shift = params.get("diag_shift", 0.01)
     sr = nk.optimizer.SR(diag_shift=diag_shift)
-
-    # VMC driver
+    
     driver = nk.VMC(hamiltonian=H, optimizer=optimizer, variational_state=vstate, preconditioner=sr)
 
-    show_progress = params.get("show_progress", False)
+    driver.run(n_iter=n_iter, out=out, show_progress=show_progress)
+    return vstate
 
-    # Run optimization and collect energy per step
-    log = driver.run(n_iter=n_iter, out=None, show_progress=show_progress)
 
-    out = {
-        "vstate": vstate,
-        "log": log
+def generate_filename(params):
+    filename = params.get("out", "output")
+    for key, value in params.items():
+        if key != "out":
+            formatted_value = str(value).replace(".", "_")
+            filename += f"_{key}_{formatted_value}"
+    return filename
+
+def generate_params(**kwargs):
+    params = {
+        **kwargs
     }
-    return out
+    filename = generate_filename(params)
+    params["out"] = filename
+    return params
+
+def maximally_positive_sign(psi):
+    avg_sign = np.mean(np.sign(psi))
+    if avg_sign < 0:
+        print("Flipping the sign of the ground state wavefunction to ensure positive overlap.")
+        psi *= -1
+    return psi
+
+def write_output(H, vstate, params):
+    psi = maximally_positive_sign(vstate.to_array())
+    outfile = params.get("out", "output") + ".h5"
+    try:
+        logfile = params.get("out", "output") + ".log"
+        data = json.load(open(logfile))
+        en_var_steps = np.real(data["Energy"]["Mean"])
+        en_var = en_var_steps[-1]
+    except Exception as e:
+        print(f"Could not read log file {logfile}: {e}")
+        en_var_steps = None
+        en_var = None
+    
+    exact_ground_energy, psi_0 = nk.exact.lanczos_ed(H, k=1, compute_eigenvectors=True)
+    psi_0 = maximally_positive_sign(psi_0[:, 0])  # Get the ground state vector
+    
+    with h5py.File(outfile, "w") as f:
+        f.create_dataset("psi", data=psi)
+        f.create_dataset("en_var_steps", data=en_var_steps if en_var_steps is not None else False)
+        f.create_dataset("en_var", data=en_var if en_var is not None else False)
+        f.create_dataset("exact_ground_energy", data=exact_ground_energy)
+        f.create_dataset("psi_0", data=psi_0)
+
+        for (key, value) in params.items():
+            if isinstance(value, (int, float, str)):
+                f.attrs[key] = value
+            else:
+                f.attrs[key] = str(value)
+
