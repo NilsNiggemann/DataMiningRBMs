@@ -88,6 +88,58 @@ def ipr(psi):
     prob = np.abs(psi)**2 / norm
     return np.sum(prob**2)
 
+def pca_spectrum_from_state(psi):
+    """
+    Compute PCA eigenspectrum of local Sz features
+    from a given state vector psi.
+
+    Parameters
+    ----------
+    psi : np.ndarray
+        State vector of shape (2**L,), assumed normalized.
+
+    Returns
+    -------
+    eigvals : np.ndarray
+        Eigenvalues of the covariance matrix (sorted descending).
+    eigvecs : np.ndarray
+        Corresponding eigenvectors (columns).
+    cov : np.ndarray
+        The covariance matrix itself.
+    """
+    # number of sites
+    L = int(np.log2(len(psi)))
+    if 2**L != len(psi):
+        raise ValueError("psi length must be a power of 2")
+
+    # probabilities
+    probs = np.abs(psi)**2
+
+    # precompute all configurations' Sz vectors
+    # each config represented by bitstring of length L
+    sz_configs = np.zeros((len(psi), L))
+    for idx in range(len(psi)):
+        bits = [(idx >> j) & 1 for j in range(L)]
+        # map 0 -> +1, 1 -> -1 (spin up/down in Sz basis)
+        sz_configs[idx] = [1 - 2*b for b in bits]
+
+    # mean <Sz_i>
+    mean_sz = probs @ sz_configs  # shape (L,)
+
+    # correlations <Sz_i Sz_j>
+    corr = sz_configs.T @ (probs[:, None] * sz_configs)  # shape (L, L)
+
+    # covariance
+    cov = corr - np.outer(mean_sz, mean_sz)
+
+    # eigen-decomposition
+    eigvals, eigvecs = np.linalg.eigh(cov)
+    # sort in descending order
+    order = np.argsort(eigvals)[::-1]
+    eigvals, eigvecs = eigvals[order], eigvecs[:, order]
+
+    return eigvals, eigvecs, cov
+
 def pca_entropy(psi):
     """
     Compute the PCA entropy (SPCA) of a vector psi.
@@ -98,13 +150,15 @@ def pca_entropy(psi):
     Returns:
         float: The PCA entropy value.
     """
-    psi = np.asarray(psi)
-    norm = np.sum(np.abs(psi)**2)
-    if norm == 0:
-        return 0.0
-    prob = np.abs(psi)**2 / norm
-    prob = prob[prob > 0]  # Avoid log(0)
-    return -np.sum(prob * np.log(prob))
+    lambdas, _, _ = pca_spectrum_from_state(psi)[0]
+
+    normalized_lambdas = lambdas / np.sum(lambdas)
+
+    normalized_lambdas = normalized_lambdas[normalized_lambdas > 0]  # Avoid log(0)
+    k = len(normalized_lambdas)
+    SPCA = - 1/np.log(k) * np.sum(normalized_lambdas * np.log(normalized_lambdas))
+    return SPCA
+
 
 def renyi_entropy(psi, alpha=2):
     """
@@ -144,7 +198,7 @@ def infidelity(psi, psi_0):
     norm_psi = np.linalg.norm(psi)
     norm_psi_0 = np.linalg.norm(psi_0)
     if norm_psi == 0 or norm_psi_0 == 0:
-        return 1.0
+        return np.nan
     psi = psi / norm_psi
     psi_0 = psi_0 / norm_psi_0
     fidelity = np.abs(np.vdot(psi_0, psi))**2
