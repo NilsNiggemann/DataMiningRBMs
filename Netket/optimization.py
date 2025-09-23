@@ -93,6 +93,51 @@ def optimize_rbm(H, params):
     driver.run(n_iter=n_iter, out=out, show_progress=show_progress)
     return vstate
 
+def optimize_inf_rbm(H, params):
+    # Use DEFAULT_PARAMS as base, override with params
+    merged_params = {**DEFAULT_PARAMS, **params}
+    alpha = merged_params["alpha"]
+    learning_rate = merged_params["learning_rate"]
+    n_iter = merged_params["n_iter"]
+    diag_shift = merged_params["diag_shift"]
+    show_progress = merged_params["show_progress"]
+    out = merged_params["out"]
+
+    hilbert = H.hilbert
+    model = nk.models.RBM(alpha=alpha, use_visible_bias=True, use_hidden_bias=True)
+
+    sa = nk.sampler.MetropolisLocal(hilbert=hilbert, n_chains_per_rank=16)
+
+    e_gs, v_gs = nk.exact.lanczos_ed(H, compute_eigenvectors=True)
+
+    vs_target = nk.vqs.MCState(
+        sampler=sa,
+        model=nk.models.LogStateVector(hilbert, param_dtype=jnp.float64),
+        n_samples=100,
+        variables={"params": {"logstate": jnp.log(v_gs.astype(jnp.complex128)).squeeze()}},
+    )
+
+    vs = nk.vqs.MCState(
+        sampler=sa,
+        model=model,
+        n_samples=100,
+    )
+    optimizer = nk.optimizer.Sgd(learning_rate=learning_rate)
+
+    sr = nk.optimizer.SR(diag_shift=diag_shift)
+    
+    import netket.experimental as nkx
+    driver = nkx.driver.Infidelity_SR(
+        target_state=vs_target,
+        optimizer=optimizer,
+        diag_shift=diag_shift,
+        variational_state=vs,
+        operator=None,
+        # preconditioner=sr
+    )
+    driver.run(n_iter=n_iter, out=out, show_progress=show_progress)
+    return vs
+
 
 def generate_filename(params):
     filename = params.get("out", "output")
