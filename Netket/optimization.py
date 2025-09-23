@@ -4,30 +4,32 @@ from netket.operator.spin import sigmax, sigmay, sigmaz
 import h5py
 import json
 
+import jax.numpy as jnp
+
 def construct_hamiltonian_bonds(Jijalphabeta, h, bonds):
-    N = h.shape[1]
+    N = h.shape[0]
     hilbert = nk.hilbert.Spin(s=0.5, N=N)
     pauli = [sigmax, sigmay, sigmaz]
 
     # Interaction terms
     interaction_terms = [
-        Jijalphabeta[i, j, alpha, beta] * pauli[alpha](hilbert,i) * pauli[beta](hilbert,j)
-        for (i,j) in bonds
+        Jijalphabeta[bond, alpha, beta] * pauli[alpha](hilbert,i) * pauli[beta](hilbert,j)
+        for (bond,(i,j)) in enumerate(bonds)
         for alpha in range(3)
         for beta in range(3)
-        if np.abs(Jijalphabeta[i, j, alpha, beta]) > 1e-12
+        if np.abs(Jijalphabeta[bond, alpha, beta]) > 1e-12
     ]
 
     # Local field terms
     field_terms = [
-        h[alpha, i] * pauli[alpha](hilbert, i)
+        h[i,alpha] * pauli[alpha](hilbert, i)
         for i in range(N)
         for alpha in range(3)
-        if np.abs(h[alpha, i]) > 1e-12
+        if np.abs(h[i,alpha]) > 1e-12
     ]
 
     ha = sum(interaction_terms, nk.operator.LocalOperator(hilbert)) + sum(field_terms, nk.operator.LocalOperator(hilbert))
-    ha = 0.5*(ha + ha.H)  # Ensure Hermiticity
+    # ha = 0.5*(ha + ha.H)  # Ensure Hermiticity
     return ha
 
 def construct_hamiltonian(Jijalphabeta, h):
