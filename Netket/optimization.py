@@ -121,7 +121,7 @@ def write_output(H, vstate, params):
     try:
         logfile = params.get("out", "output") + ".log"
         data = json.load(open(logfile))
-        en_var_steps = np.real(data["Energy"]["Mean"])
+        en_var_steps = data["Energy"]["Mean"]["real"]
         en_var = en_var_steps[-1]
     except Exception as e:
         print(f"Could not read log file {logfile}: {e}")
@@ -143,4 +143,5 @@ def write_output(H, vstate, params):
                 f.attrs[key] = value
             else:
                 f.attrs[key] = str(value)
+
 
