@@ -11,9 +11,8 @@ def construct_hamiltonian_bonds(Jijalphabeta, h, bonds):
 
     # Interaction terms
     interaction_terms = [
-        Jijalphabeta[alpha, beta, i, j] * pauli[alpha](hilbert,i) * pauli[beta](hilbert,j)
+        Jijalphabeta[i, j, alpha, beta] * pauli[alpha](hilbert,i) * pauli[beta](hilbert,j)
         for (i,j) in bonds
-        for j in range(i,N)
         for alpha in range(3)
         for beta in range(3)
         if np.abs(Jijalphabeta[i, j, alpha, beta]) > 1e-12
@@ -30,6 +29,7 @@ def construct_hamiltonian_bonds(Jijalphabeta, h, bonds):
     ha = sum(interaction_terms, nk.operator.LocalOperator(hilbert)) + sum(field_terms, nk.operator.LocalOperator(hilbert))
     ha = 0.5*(ha + ha.H)  # Ensure Hermiticity
     return ha
+
 def construct_hamiltonian(Jijalphabeta, h):
     N = h.shape[1]
     hilbert = nk.hilbert.Spin(s=0.5, N=N)

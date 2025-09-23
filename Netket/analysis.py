@@ -150,7 +150,7 @@ def pca_entropy(psi):
     Returns:
         float: The PCA entropy value.
     """
-    lambdas, _, _ = pca_spectrum_from_state(psi)[0]
+    lambdas, _, _ = pca_spectrum_from_state(psi)
 
     normalized_lambdas = lambdas / np.sum(lambdas)
 
@@ -212,3 +212,16 @@ def read_h5_attributes(filename):
     with h5py.File(filename, "r") as f:
         attrs = dict(f.attrs)
     return attrs
+
+
+def attach_hypotheses_fields(df, hypotheses):
+    """
+    Computes new columns for the dataframe using the provided hypotheses functions.
+    Each function in hypotheses is applied to the 'psi' column of the dataframe.
+    """
+    for name, func in hypotheses.items():
+        if name == "Renyi_2":
+            df[name] = df["psi"].apply(lambda psi: func(psi, alpha=2))
+        else:
+            df[name] = df["psi"].apply(func)
+    return df
