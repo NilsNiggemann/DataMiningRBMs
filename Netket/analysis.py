@@ -203,3 +203,12 @@ def infidelity(psi, psi_0):
     psi_0 = psi_0 / norm_psi_0
     fidelity = np.abs(np.vdot(psi_0, psi))**2
     return 1.0 - fidelity
+
+
+def read_h5_attributes(filename):
+    """
+    Reads and returns all attributes from the root of an HDF5 file.
+    """
+    with h5py.File(filename, "r") as f:
+        attrs = dict(f.attrs)
+    return attrs
