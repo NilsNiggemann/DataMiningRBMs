@@ -9,27 +9,24 @@ import jax.numpy as jnp
 def construct_hamiltonian_bonds(Jijalphabeta, h, bonds):
     N = h.shape[0]
     hilbert = nk.hilbert.Spin(s=0.5, N=N)
-    pauli = [sigmax, sigmay, sigmaz]
+    pauli = [nk.operator.spin.sigmax, nk.operator.spin.sigmay, nk.operator.spin.sigmaz]
 
-    # Interaction terms
     interaction_terms = [
-        Jijalphabeta[bond, alpha, beta] * pauli[alpha](hilbert,i) * pauli[beta](hilbert,j)
-        for (bond,(i,j)) in enumerate(bonds)
+        Jijalphabeta[bond, alpha, beta] * pauli[alpha](hilbert, i) * pauli[beta](hilbert, j)
+        for (bond, (i, j)) in enumerate(bonds)
         for alpha in range(3)
         for beta in range(3)
         if np.abs(Jijalphabeta[bond, alpha, beta]) > 1e-12
     ]
 
-    # Local field terms
     field_terms = [
-        h[i,alpha] * pauli[alpha](hilbert, i)
+        h[i, alpha] * pauli[alpha](hilbert, i)
         for i in range(N)
         for alpha in range(3)
-        if np.abs(h[i,alpha]) > 1e-12
+        if np.abs(h[i, alpha]) > 1e-12
     ]
 
     ha = sum(interaction_terms, nk.operator.LocalOperator(hilbert)) + sum(field_terms, nk.operator.LocalOperator(hilbert))
-    # ha = 0.5*(ha + ha.H)  # Ensure Hermiticity
     return ha
 
 def construct_hamiltonian(Jijalphabeta, h):
@@ -66,6 +63,7 @@ DEFAULT_PARAMS = {
         "diag_shift": 0.01,
         "show_progress": False,
         "out": None,  # Output filename prefix
+        "symmetries": None,  # List or array of symmetry operations (e.g., permutation matrices), or None if not used
     }
 
 def optimize_rbm(H, params):
@@ -80,7 +78,12 @@ def optimize_rbm(H, params):
     out = merged_params["out"]
 
     hilbert = H.hilbert
-    model = nk.models.RBM(alpha=alpha, use_visible_bias=True, use_hidden_bias=True)
+    symmetries = merged_params["symmetries"]
+
+    if symmetries is not None:
+        model = nk.models.RBMSymm(alpha=alpha, symmetries=symmetries, use_visible_bias=True, use_hidden_bias=True)
+    else:
+        model = nk.models.RBM(alpha=alpha, use_visible_bias=True, use_hidden_bias=True)
 
     vstate = nk.vqs.FullSumState(hilbert, model)
 
@@ -138,12 +141,14 @@ def optimize_inf_rbm(H, params):
     driver.run(n_iter=n_iter, out=out, show_progress=show_progress)
     return vs
 
-
+# Limit for parameter string length in filenames to avoid excessively long file names.
+MAX_PARAM_STRING_LENGTH = 30
 def generate_filename(params):
     filename = params.get("out", "output")
     for key, value in params.items():
-        if key != "out":
-            formatted_value = str(value).replace(".", "_")
+        val_str = str(value)
+        if key != "out" and len(val_str) <= MAX_PARAM_STRING_LENGTH:
+            formatted_value = val_str.replace(".", "_")
             filename += f"_{key}_{formatted_value}"
     return filename
 
@@ -182,7 +187,7 @@ def write_output(H, vstate, params):
         f.create_dataset("psi", data=psi)
         f.create_dataset("en_var_steps", data=en_var_steps if en_var_steps is not None else False)
         f.create_dataset("en_var", data=en_var if en_var is not None else False)
-        f.create_dataset("exact_ground_energy", data=exact_ground_energy)
+        f.create_dataset("exact_ground_energy", data=exact_ground_energy[0])
         f.create_dataset("psi_0", data=psi_0)
 
         for (key, value) in params.items():

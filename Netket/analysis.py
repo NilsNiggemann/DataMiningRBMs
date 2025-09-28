@@ -24,33 +24,18 @@ def load_outputs_to_dataframe(file_list):
             psi_0 = f["psi_0"][:]
             en_var = f["en_var"][()] if "en_var" in f else None
             exact_ground_energy = f["exact_ground_energy"][()]
+            infid = infidelity(psi, psi_0)
             if en_var is not None:
-                delta_e = np.abs(en_var - exact_ground_energy/exact_ground_energy)
+                delta_e = np.abs((en_var - exact_ground_energy)/exact_ground_energy)
             else:
                 delta_e = None
             data.append({
                 "psi": psi,
                 "psi_0": psi_0,
-                "Delta_E": delta_e
+                "Delta_E": delta_e,
+                "infidelity": infid
             })
     return pd.DataFrame(data)
-
-def mean_sign(psi):
-    """
-    Compute the average sign of a vector psi.
-
-    Parameters:
-        psi (array-like): Input vector (can be complex or real).
-
-    Returns:
-        float: The average sign value.
-    """
-    psi = np.asarray(psi)
-    norm = np.sum(np.abs(psi))
-    if norm == 0:
-        return 0.0
-    sign = np.sign(psi)
-    return np.sum(sign * np.abs(psi)) / norm
 
 def mean_phase(psi):
     """
@@ -64,12 +49,9 @@ def mean_phase(psi):
     """
     psi = np.asarray(psi)
     if np.all(psi == 0):
-        return 0.0
+        return np.nan
     phases = np.angle(psi)
-    weights = np.abs(psi)
-    if np.sum(weights) == 0:
-        return 0.0
-    return np.angle(np.sum(weights * np.exp(1j * phases)) / np.sum(weights))
+    return np.mean(phases)
 
 def ipr(psi):
     """
@@ -213,15 +195,12 @@ def read_h5_attributes(filename):
         attrs = dict(f.attrs)
     return attrs
 
-
 def attach_hypotheses_fields(df, hypotheses):
     """
     Computes new columns for the dataframe using the provided hypotheses functions.
     Each function in hypotheses is applied to the 'psi' column of the dataframe.
     """
     for name, func in hypotheses.items():
-        if name == "Renyi_2":
-            df[name] = df["psi"].apply(lambda psi: func(psi, alpha=2))
-        else:
-            df[name] = df["psi"].apply(func)
+        df[name] = df["psi_0"].apply(func)
     return df
+
