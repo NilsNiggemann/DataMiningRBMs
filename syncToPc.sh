@@ -1,8 +1,9 @@
 #!/bin/bash
 
 PATHONPC="/scratch/shared"
-LOCALPATH="./datasetRBMs"
-SSH_HOSTNAME="pcictp"
+LOCALPATH="./data"syncToPc.sh
+
+SSH_HOSTNAME=$RBM_DATA_HOST
 MODE=""
 
 while [[ $# -gt 0 ]]; do
@@ -23,8 +24,8 @@ done
 
 if [[ ${MODE} == "GET" ]]; then
 	#pull from remote
-	(set -x ; rsync -azuve ssh ${SSH_HOSTNAME}:${PATHONPC} ${LOCALPATH})
+	(set -x ; rsync -Lazuve ssh ${SSH_HOSTNAME}:${PATHONPC} ${LOCALPATH})
 elif [[ ${MODE} == "PUT" ]]; then
 	#push to remote
-	(set -x ; rsync -azuve ssh ${LOCALPATH} ${SSH_HOSTNAME}:${PATHONPC})
+	(set -x ; rsync -Lazuve ssh ${LOCALPATH} ${SSH_HOSTNAME}:${PATHONPC})
 fi
