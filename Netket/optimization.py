@@ -64,7 +64,12 @@ DEFAULT_PARAMS = {
         "show_progress": False,
         "out": None,  # Output filename prefix
         "symmetries": None,  # List or array of symmetry operations (e.g., permutation matrices), or None if not used
+        "param_dtype": np.complex64, # Data type for model parameters
+        "holomorphic": 'auto', # Whether to use holomorphic SR
     }
+
+def is_holomorphic(param_dtype):
+    return np.issubdtype(param_dtype, np.complexfloating)
 
 def optimize_rbm(H, params):
     # Hilbert space from Hamiltonian
@@ -76,25 +81,30 @@ def optimize_rbm(H, params):
     diag_shift = merged_params["diag_shift"]
     show_progress = merged_params["show_progress"]
     out = merged_params["out"]
-
+    param_dtype = merged_params["param_dtype"]
     hilbert = H.hilbert
     symmetries = merged_params["symmetries"]
+    if merged_params["holomorphic"] == 'auto':
+        holomorphic = is_holomorphic(param_dtype)
+    else:
+        holomorphic = merged_params["holomorphic"]
 
     if symmetries is not None:
-        model = nk.models.RBMSymm(alpha=alpha, symmetries=symmetries, use_visible_bias=True, use_hidden_bias=True)
+        model = nk.models.RBMSymm(alpha=alpha, symmetries=symmetries, use_visible_bias=True, use_hidden_bias=True,param_dtype=param_dtype)
     else:
-        model = nk.models.RBM(alpha=alpha, use_visible_bias=True, use_hidden_bias=True)
+        model = nk.models.RBM(alpha=alpha, use_visible_bias=True, use_hidden_bias=True,param_dtype=param_dtype)
 
     vstate = nk.vqs.FullSumState(hilbert, model)
 
     optimizer = nk.optimizer.Sgd(learning_rate=learning_rate)
 
-    sr = nk.optimizer.SR(diag_shift=diag_shift)
+    sr = nk.optimizer.SR(diag_shift=diag_shift,holomorphic=holomorphic)
     
     driver = nk.VMC(hamiltonian=H, optimizer=optimizer, variational_state=vstate, preconditioner=sr)
 
     driver.run(n_iter=n_iter, out=out, show_progress=show_progress)
     return vstate
+
 
 def optimize_inf_rbm(H, params):
     # Use DEFAULT_PARAMS as base, override with params
@@ -160,15 +170,8 @@ def generate_params(**kwargs):
     params["out"] = filename
     return params
 
-def maximally_positive_sign(psi):
-    avg_sign = np.mean(np.sign(psi))
-    if avg_sign < 0:
-        print("Flipping the sign of the ground state wavefunction to ensure positive overlap.")
-        psi *= -1
-    return psi
-
 def write_output(H, vstate, params):
-    psi = maximally_positive_sign(vstate.to_array())
+    psi = vstate.to_array()
     outfile = params.get("out", "output") + ".h5"
     try:
         logfile = params.get("out", "output") + ".log"
@@ -181,7 +184,7 @@ def write_output(H, vstate, params):
         en_var = None
     
     exact_ground_energy, psi_0 = nk.exact.lanczos_ed(H, k=1, compute_eigenvectors=True)
-    psi_0 = maximally_positive_sign(psi_0[:, 0])  # Get the ground state vector
+    psi_0 = psi_0[:, 0]  # Get the ground state vector
     
     with h5py.File(outfile, "w") as f:
         f.create_dataset("psi", data=psi)

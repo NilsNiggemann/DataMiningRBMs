@@ -5,7 +5,14 @@ import pandas as pd
 import numpy as np
 import h5py
 import pandas as pd
-
+def _arr_to_num(arr):
+    if np.isscalar(arr):
+        return arr
+    elif np.ndim(arr) != 0 and len(arr) == 1:
+        return arr[0]
+    else:
+        raise ValueError("Input is not a scalar or single-element array.")
+    
 def load_outputs_to_dataframe(file_list):
     """
     Reads a list of HDF5 output files and returns a DataFrame with columns:
@@ -23,7 +30,7 @@ def load_outputs_to_dataframe(file_list):
             psi = f["psi"][:]
             psi_0 = f["psi_0"][:]
             en_var = f["en_var"][()] if "en_var" in f else None
-            exact_ground_energy = f["exact_ground_energy"][()]
+            exact_ground_energy = _arr_to_num(f["exact_ground_energy"][()])
             infid = infidelity(psi, psi_0)
             if en_var is not None:
                 delta_e = np.abs((en_var - exact_ground_energy)/exact_ground_energy)
@@ -53,6 +60,22 @@ def mean_phase(psi):
     phases = np.angle(psi)
     return np.mean(phases)
 
+def std_phase(psi):
+    """
+    Compute the standard deviation of the phase of a vector psi.
+
+    Parameters:
+        psi (array-like): Input vector (can be complex or real).
+
+    Returns:
+        float: The standard deviation of the phase.
+    """
+    psi = np.asarray(psi)
+    if np.all(psi == 0):
+        return np.nan
+    phases = np.angle(psi)
+    return np.std(phases)
+
 def ipr(psi):
     """
     Compute the Inverse Participation Ratio (IPR) of a vector psi.
@@ -64,11 +87,7 @@ def ipr(psi):
         float: The IPR value.
     """
     psi = np.asarray(psi)
-    norm = np.sum(np.abs(psi)**2)
-    if norm == 0:
-        return 0.0
-    prob = np.abs(psi)**2 / norm
-    return np.sum(prob**2)
+    return np.sum(np.abs(psi)**4)
 
 def pca_spectrum_from_state(psi):
     """
@@ -153,8 +172,8 @@ def renyi_entropy(psi, alpha=2):
     Returns:
         float: The Renyi entropy value.
     """
-    if alpha <= 1:
-        raise ValueError("alpha must be > 1")
+    if alpha ==1:
+        raise ValueError("alpha must be != 1")
     psi = np.asarray(psi)
     norm = np.sum(np.abs(psi)**2)
     if norm == 0:

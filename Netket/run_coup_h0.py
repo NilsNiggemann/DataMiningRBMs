@@ -19,23 +19,23 @@ Jij, h, bonds = parseCouplings.parseCouplings(input_file)
 indices = np.random.choice(len(h), size=100, replace=False)
 
 for idx_num, i in enumerate(indices):
-    H_ran = construct_hamiltonian_bonds(Jij[i], h[i], bonds[i])
+    H_ran = construct_hamiltonian_bonds(Jij[i], 0*h[i], bonds[i])
     H = H_ran
 
     exact_ground_energy, exact_ground_state = nk.exact.lanczos_ed(H, k=1, compute_eigenvectors=True)
-    print(f"Hamiltonian {idx_num+1}: index={i}, Exact ground state energy: {exact_ground_energy[0]}",flush=True)
-    
+    print(f"Hamiltonian {idx_num+1}: index={i}, Exact ground state energy: {exact_ground_energy[0]}")
+
     params = generate_params(
         alpha=1,
         seed=1234,
         learning_rate=3e-2,
         n_iter=1000,
         show_progress=False,
-        out=f"../data/data_rand/rbm_optimization_{i}",
+        out=f"../data/data_rand_h0/rbm_optimization_{i}",
     )
     output_file = params["out"] + ".log"
     if os.path.exists(output_file):
-        print(f"Skipping Hamiltonian {idx_num+1}: index={i}, output file already exists.",flush=True)
+        print(f"Skipping Hamiltonian {idx_num+1}: index={i}, output file already exists.")
         continue
 
     out = optimize_rbm(H, params)
