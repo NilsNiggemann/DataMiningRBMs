@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PATHONPC="/scratch/shared"
-LOCALPATH="./data"syncToPc.sh
+LOCALPATH="./data"
 
 SSH_HOSTNAME=$RBM_DATA_HOST
 MODE=""
