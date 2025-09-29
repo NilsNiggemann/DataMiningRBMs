@@ -216,5 +216,4 @@ __marimo__/
 .streamlit/secrets.toml
 
 #Custom
-data_rand/
-data_rand_epsilon_TFI/
+data
