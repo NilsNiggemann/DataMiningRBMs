@@ -3,7 +3,7 @@ import netket as nk
 from netket.operator.spin import sigmax, sigmay, sigmaz
 import h5py
 import json
-
+import rotation
 import jax.numpy as jnp
 
 def construct_hamiltonian_bonds(Jijalphabeta, h, bonds):
@@ -29,32 +29,13 @@ def construct_hamiltonian_bonds(Jijalphabeta, h, bonds):
     ha = sum(interaction_terms, nk.operator.LocalOperator(hilbert)) + sum(field_terms, nk.operator.LocalOperator(hilbert))
     return ha
 
-def construct_hamiltonian(Jijalphabeta, h):
-    N = h.shape[1]
-    hilbert = nk.hilbert.Spin(s=0.5, N=N)
-    pauli = [sigmax, sigmay, sigmaz]
+def construct_hamiltonian_bonds_rotated(Jijalphabeta, h, bonds, roll, pitch, yaw):
+    # Jijalphabeta = np.array([np.eye(3)*np.max(Jijalphabeta[bond,:,:]) for bond in range(len(bonds))])
+    R = rotation.rotation_matrix_rpy(roll, pitch, yaw)
+    Jijalphabeta = np.array([R@Jijalphabeta[bond,:,:]@R.T for bond in range(len(bonds))])
+    h = np.array([R@h[i,:] for i in range(h.shape[0])])
+    return construct_hamiltonian_bonds(Jijalphabeta, h, bonds)
 
-    # Interaction terms
-    interaction_terms = [
-        Jijalphabeta[alpha, beta, i, j] * pauli[alpha](hilbert,i) * pauli[beta](hilbert,j)
-        for i in range(N)
-        for j in range(i,N)
-        for alpha in range(3)
-        for beta in range(3)
-        if np.abs(Jijalphabeta[alpha, beta, i, j]) > 1e-12
-    ]
-
-    # Local field terms
-    field_terms = [
-        h[alpha, i] * pauli[alpha](hilbert, i)
-        for i in range(N)
-        for alpha in range(3)
-        if np.abs(h[alpha, i]) > 1e-12
-    ]
-
-    ha = sum(interaction_terms, nk.operator.LocalOperator(hilbert)) + sum(field_terms, nk.operator.LocalOperator(hilbert))
-    ha = 0.5*(ha + ha.H)  # Ensure Hermiticity
-    return ha
 
 DEFAULT_PARAMS = {
         "alpha": 1,  # Hidden unit density
