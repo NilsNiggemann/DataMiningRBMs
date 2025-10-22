@@ -36,6 +36,14 @@ def construct_hamiltonian_bonds_rotated(Jijalphabeta, h, bonds, roll, pitch, yaw
     h = np.array([R@h[i,:] for i in range(h.shape[0])])
     return construct_hamiltonian_bonds(Jijalphabeta, h, bonds)
 
+def rotate_Jij(Jalphabeta, roll, pitch, yaw):
+    R = rotation.rotation_matrix_rpy(roll, pitch, yaw)
+    return R@Jalphabeta@R.T
+
+def rotate_hi(hi, roll, pitch, yaw):
+    R = rotation.rotation_matrix_rpy(roll, pitch, yaw)
+    return R@hi
+
 
 DEFAULT_PARAMS = {
         "alpha": 1,  # Hidden unit density

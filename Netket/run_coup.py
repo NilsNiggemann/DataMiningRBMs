@@ -1,8 +1,6 @@
 from optimization import *
 import optimization
 import sys
-import importlib
-importlib.reload(optimization)
 sys.path.append("../python")
 import parseCouplings
 sys.path.append("../Netket")

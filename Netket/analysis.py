@@ -5,6 +5,8 @@ import pandas as pd
 import numpy as np
 import h5py
 import pandas as pd
+import os
+
 def _arr_to_num(arr):
     if np.isscalar(arr):
         return arr
@@ -13,7 +15,27 @@ def _arr_to_num(arr):
     else:
         raise ValueError("Input is not a scalar or single-element array.")
     
-def load_outputs_to_dataframe(file_list):
+def get_h5_files(path,suffix=".h5"):
+    h5_files = [os.path.join(path, f) for f in os.listdir(path) if f.endswith(suffix)]
+    return h5_files
+
+def read_folder_to_dataframe(folder, suffix=".h5"):
+    """
+    Reads all HDF5 files in a folder and returns a DataFrame with columns:
+    'psi', 'psi_0', 'Delta_E' (energy difference between variational and exact).
+
+    Parameters:
+        folder (str): Path to the folder containing HDF5 files.
+        suffix (str): Suffix of the files to read (default is ".h5").
+
+    Returns:
+        pd.DataFrame: DataFrame with columns ['psi', 'psi_0', 'Delta_E'].
+    """
+
+    file_list = [os.path.join(folder, f) for f in os.listdir(folder) if f.endswith(suffix)]
+    return load_outputs_to_dataframe(file_list)
+
+def load_outputs_to_dataframe(file_list,attach_attributes=True):
     """
     Reads a list of HDF5 output files and returns a DataFrame with columns:
     'psi', 'psi_0', 'Delta_E' (energy difference between variational and exact).
@@ -36,13 +58,23 @@ def load_outputs_to_dataframe(file_list):
                 delta_e = np.abs((en_var - exact_ground_energy)/exact_ground_energy)
             else:
                 delta_e = None
-            data.append({
+
+            val_dict ={
                 "psi": psi,
                 "psi_0": psi_0,
                 "Delta_E": delta_e,
-                "infidelity": infid
-            })
-    return pd.DataFrame(data)
+                "infidelity": infid,
+                "file" : fname
+            }
+
+            if attach_attributes:
+                attrs = dict(f.attrs)
+                val_dict.update(attrs)
+
+            data.append(val_dict)
+
+    df = pd.DataFrame(data)
+    return df
 
 def mean_phase(psi):
     """
