@@ -6,6 +6,7 @@ import numpy as np
 import h5py
 import pandas as pd
 import os
+from scipy.stats import pearsonr
 
 def _arr_to_num(arr):
     if np.isscalar(arr):
@@ -63,6 +64,8 @@ def load_outputs_to_dataframe(file_list,attach_attributes=True):
                 "psi": psi,
                 "psi_0": psi_0,
                 "Delta_E": delta_e,
+                "E_exact": exact_ground_energy,
+                "E_var": en_var,
                 "infidelity": infid,
                 "file" : fname
             }
@@ -120,6 +123,14 @@ def ipr(psi):
     """
     psi = np.asarray(psi)
     return np.sum(np.abs(psi)**4)
+
+def log_ipr(psi):
+    return np.log(ipr(psi))
+
+
+def compute_pearson_correlation(series1, series2):
+    correlation, p_value = pearsonr(series1, series2)
+    return correlation
 
 def pca_spectrum_from_state(psi):
     """

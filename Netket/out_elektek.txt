@@ -1,0 +1,300 @@
+Optimizing Hamiltonian 50 with rotation angles: alpha=4.107222809122656, beta=5.39439619887127, gamma=0.9331063280366987
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=3.420135225460928, beta=2.822081158018795, gamma=1.1487395425361726
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=5.026565567819405, beta=0.9527273663186051, gamma=1.9856703244210334
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=2.9775330335493275, beta=5.909979381365974, gamma=2.1209766238032435
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=5.62939512334173, beta=3.6135825128756704, gamma=0.0537663310481147
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=2.6916852655578496, beta=2.865197685494417, gamma=5.295871864131364
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=0.2980671171065904, beta=4.58913549547014, gamma=4.221828521611399
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=1.197617947463896, beta=4.225727437229262, gamma=5.216016299344358
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=6.0636593422110705, beta=5.986435297134341, gamma=3.530248284124921
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=2.277948078627589, beta=5.430874068995498, gamma=5.029088369528377
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=4.772354202207681, beta=0.6530974281064057, gamma=5.22815683133297
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=1.1072141667209818, beta=3.027395831505713, gamma=0.7835380260060498
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=1.5409842580673996, beta=5.102155866095212, gamma=2.4180585292933885
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=5.861512843633594, beta=4.231468004866081, gamma=6.140661899181541
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=5.14000723994945, beta=3.7013829554992137, gamma=2.4810771823137183
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=3.7344683840354294, beta=0.1315030814691278, gamma=5.486278458850301
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=2.4109255231465174, beta=0.7730410861799989, gamma=4.291683491933227
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=0.9352146303465516, beta=4.947711128814966, gamma=5.200126692787133
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=5.721609565299906, beta=0.80175243600765, gamma=1.1203004520109248
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=3.4098011734074434, beta=3.077679450288252, gamma=3.191290985434425
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=3.585780829560021, beta=1.2186576802330966, gamma=4.067701513234036
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=4.908748230316681, beta=5.705016069846921, gamma=0.02777612622463057
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=1.743146806318663, beta=5.6932581387049686, gamma=1.7581849882523535
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=4.831266625566862, beta=3.969411085048122, gamma=3.9274572626649955
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=5.08445011586522, beta=3.9984141678883276, gamma=3.804105114730809
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=2.685679550355292, beta=1.8171503857501001, gamma=3.3518763448500253
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=1.9540407456792865, beta=0.7576682613887497, gamma=0.3356586137335257
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=1.4997113335627033, beta=2.561978561097336, gamma=1.7403838411305448
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=4.479697185213805, beta=4.824612874187746, gamma=2.3301295039018615
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=5.313087775887637, beta=4.179448059765616, gamma=1.9266929914460238
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=2.9970047972497236, beta=5.8845645374876225, gamma=4.327429565813883
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=1.5785925341824916, beta=0.35711603472317016, gamma=5.795434343815559
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=3.985875480722276, beta=4.6321500268537195, gamma=3.70256743541799
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=1.988507136288719, beta=0.4209023139798127, gamma=5.616436797767506
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=4.2588474861511925, beta=5.255939955189344, gamma=2.054565984739177
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=3.3332070551481117, beta=3.8278714801195917, gamma=2.7849540066661245
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=2.729298308246301, beta=2.859653857875161, gamma=4.0907635761745835
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=2.333142473565244, beta=4.703876636449252, gamma=2.753496282820217
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=5.784475414433927, beta=3.9948915125081212, gamma=2.5464238486916475
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=4.019713847128392, beta=3.949329753018648, gamma=2.6195242154226346
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=3.1776455196922218, beta=5.200241431023738, gamma=5.779136361244375
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=0.010104315666780599, beta=1.9508733743623043, gamma=2.4908931267700987
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=6.050970935986622, beta=5.1697791863925735, gamma=2.2295933539383377
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=3.522403908088033, beta=2.7439394222890097, gamma=2.817415935961214
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=2.3319760928713924, beta=4.2170207206574215, gamma=1.5836488581084436
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=5.820564982253257, beta=0.5059727782393834, gamma=5.630983534887005
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=4.041952817978455, beta=5.627595711332582, gamma=0.9315460290051091
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=4.3222834602027245, beta=0.7376524537515037, gamma=3.0514099763965827
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=5.397836348010938, beta=0.3024030315594616, gamma=1.5566543996210103
+done
+Optimizing Hamiltonian 50 with rotation angles: alpha=1.2315637590719832, beta=4.495128106338377, gamma=3.000404071841016
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=5.885964773047147, beta=0.23220902069207522, gamma=0.61742415579621
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=5.985375227102063, beta=2.307868278833034, gamma=0.3358377194262121
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=4.8809652357580555, beta=2.9214432052418426, gamma=5.570742542308065
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=4.728742090324559, beta=0.21100550285515124, gamma=1.069365377345566
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=6.06942560306611, beta=3.1088427965922114, gamma=1.8164279500538787
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=0.5858396745486356, beta=3.503040751549864, gamma=1.1014449204725745
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=0.3597244405479942, beta=5.409400527690167, gamma=6.190722851341046
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=1.2362487226154337, beta=0.8344706904102707, gamma=1.7566076775796007
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=5.753145446267996, beta=2.630226792640735, gamma=3.1134848287340784
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=0.19936505350042302, beta=3.9961534811903796, gamma=2.414991627908445
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=5.596454291275616, beta=2.2980961989360176, gamma=2.659312452952586
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=6.049779284790253, beta=5.852577603723188, gamma=3.0412177859235827
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=5.580110109789361, beta=4.060966827628916, gamma=4.092152547186733
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=2.9994498739542754, beta=2.155953109986764, gamma=0.29176319447873755
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=1.6209996581497244, beta=0.8980369298317447, gamma=5.72115864816209
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=0.16925354312181673, beta=3.2444181557451577, gamma=1.124100183677414
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=0.9565272064229524, beta=2.6087097288974843, gamma=0.9933089723735186
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=4.032201152385112, beta=0.94411711806227, gamma=3.8764127219440874
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=1.1195234149501267, beta=2.3158128011687857, gamma=5.488159468010822
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=3.4877547286871855, beta=5.3843693096193475, gamma=2.4628146350787015
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=6.012726136139602, beta=5.876074351197901, gamma=1.7990867807372648
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=3.9490105063770624, beta=5.711380218694747, gamma=1.8515159506994083
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=0.9885096732323168, beta=0.1329344317522858, gamma=0.6818870194178852
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=6.278214613230938, beta=2.164403825522823, gamma=5.51921074507743
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=2.5556680248761614, beta=4.518314228159108, gamma=0.9821647244915557
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=3.915086071907842, beta=0.48538714266522814, gamma=3.10984721793478
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=3.4169161131225465, beta=0.2196344822444203, gamma=0.65316150581724
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=1.0257516698958884, beta=0.3513716234965074, gamma=3.500889096141011
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=4.971987081670226, beta=1.2595388248156547, gamma=2.1009500761337945
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=4.266798687880686, beta=2.755330143097154, gamma=6.24986789841183
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=2.8040673992254903, beta=5.052695064443082, gamma=2.5627896417110794
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=3.1927690652919423, beta=1.46738519814989, gamma=6.226482154736742
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=6.189916564487345, beta=2.7467334158426544, gamma=4.5400821980550505
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=0.4148597334762133, beta=6.23668141661161, gamma=2.164242316654863
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=4.496538141461116, beta=6.0919435723252695, gamma=4.2326691959806935
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=1.468128375523509, beta=5.101728980753747, gamma=5.641319858401574
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=1.8774056587014338, beta=4.050861530480631, gamma=2.3904653707547476
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=0.3098448771744924, beta=0.6933228513492169, gamma=0.572238981132003
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=3.050040740203425, beta=2.881781192743621, gamma=4.97366174720689
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=6.211155552558701, beta=1.922154339559668, gamma=1.155600960775442
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=3.787635976971399, beta=6.143820346310496, gamma=3.352953913430168
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=6.268971401786161, beta=1.1748565232217894, gamma=2.4481148666099126
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=5.386880579513711, beta=4.464186492231763, gamma=2.5157798459737077
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=1.3886853909875037, beta=2.7791166787843053, gamma=5.8594146455480995
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=5.781925362679317, beta=0.6906182021795749, gamma=4.64608657530728
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=1.2494795246445223, beta=2.617171656350185, gamma=4.792514675637118
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=0.07322311567906083, beta=2.804350745392486, gamma=1.1442882533256333
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=3.41094842256161, beta=5.349690116649965, gamma=0.628433499425648
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=2.746037713111738, beta=5.274003865812993, gamma=5.270498180076117
+done
+Optimizing Hamiltonian 30 with rotation angles: alpha=4.4597452222625495, beta=0.6899267891778599, gamma=4.956173439590534
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=3.0532287847843236, beta=4.173850770436485, gamma=2.3817855738602045
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=2.482521340644351, beta=1.7729209851322085, gamma=5.833786086441736
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=0.14372952757150295, beta=4.467567512083112, gamma=1.0827190197189724
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=1.3689755645577446, beta=0.21555991108047717, gamma=1.0744856516703187
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=5.764818942608841, beta=0.1309066593229529, gamma=4.116233681983555
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=4.55811301342187, beta=4.50557217522602, gamma=6.077034035553439
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=4.797839018388848, beta=4.646181237329662, gamma=1.0820215618904647
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=4.285616447747915, beta=5.181872851124171, gamma=5.008636919065962
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=0.8913160577106706, beta=4.133147077763101, gamma=0.6415119407346153
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=3.856122865848381, beta=4.696774609966097, gamma=3.768282350113691
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=2.8548629556557654, beta=1.4422587624281, gamma=5.402009383704864
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=2.481045130560626, beta=4.874559442218563, gamma=4.0407576428284
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=5.877744962834804, beta=0.3189606748223837, gamma=5.60951241508315
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=4.8107866957091, beta=3.9687716371969257, gamma=2.067012484816099
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=3.4500817435643594, beta=5.202790496188617, gamma=4.233887705331164
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=0.9806536908103637, beta=0.8765662559711657, gamma=0.7985247425234175
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=0.1899471697067114, beta=3.3628895653245645, gamma=6.108744161353186
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=3.563072950895982, beta=3.0073883720737933, gamma=0.6866030266547112
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=0.38817612695121667, beta=2.1321925310213423, gamma=0.7625896904044466
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=1.900299318410994, beta=0.8664914007183439, gamma=0.6104416285458237
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=3.102186488811021, beta=0.17426140550668942, gamma=2.6747749004116472
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=4.2778028988604, beta=3.1329445693398434, gamma=3.2450741039382414
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=6.198312658680287, beta=4.9705560904875075, gamma=6.249131167030324
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=5.088251839478506, beta=3.84401765677311, gamma=4.687338543579528
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=0.262935481132222, beta=4.036328718744165, gamma=3.3428458746200187
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=6.215684200036447, beta=1.0107343350776434, gamma=0.9771352482895798
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=2.7590742371729844, beta=2.737353478712308, gamma=0.15367606800543432
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=2.886939723067375, beta=2.0270555005092894, gamma=5.484881135936239
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=5.621191885989766, beta=1.324685127600122, gamma=6.2820494808995955
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=4.240764066771868, beta=2.2095277817982506, gamma=3.731917736052454
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=3.350053595990991, beta=4.889168622508888, gamma=1.2620310948855038
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=4.508084590520758, beta=4.943633785716495, gamma=4.553066691889231
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=0.29643489158131525, beta=4.282218530772393, gamma=2.8569670048471685
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=2.1075000295785413, beta=3.5722307746447863, gamma=5.9193378248993564
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=4.044786682651157, beta=2.493641364116651, gamma=3.2820667667919783
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=5.250758656092486, beta=6.052563868113971, gamma=1.5771015866127323
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=2.6959613897674304, beta=0.7610182261834718, gamma=0.4564199429011194
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=3.8627527059060864, beta=0.7422669919836782, gamma=6.165748488390964
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=6.231660006235344, beta=3.941416804439136, gamma=2.099373453038187
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=1.9060369746195804, beta=4.283355443230826, gamma=0.7319573929199528
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=1.9913070503108485, beta=3.0520312737583133, gamma=5.794219839910855
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=3.738147245424981, beta=3.297530894371453, gamma=4.480777992626486
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=0.78541588371002, beta=1.2897303695800981, gamma=2.681871905758084
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=3.2632312564676123, beta=5.8011549882801745, gamma=5.148860578386686
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=3.9779650476281208, beta=2.512837532458663, gamma=4.252746964707725
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=3.9879818967120597, beta=1.561479161394516, gamma=5.713720005441182
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=5.966707958999061, beta=0.44474726549262417, gamma=2.5512144853968106
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=3.7896741907568168, beta=5.8118776259285845, gamma=4.364264721196202
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=2.984054070590486, beta=4.225498599989546, gamma=4.457704149093702
+done
+Optimizing Hamiltonian 10 with rotation angles: alpha=5.614146797885945, beta=4.12784205691577, gamma=1.075930698758302
+done
