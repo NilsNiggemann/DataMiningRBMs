@@ -248,6 +248,10 @@ def infidelity(psi, psi_0):
     fidelity = np.abs(np.vdot(psi_0, psi))**2
     return 1.0 - fidelity
 
+def uniform_state_overlap(psi):
+    uniform_psi = np.ones(len(psi)) / np.sqrt(len(psi))
+    overlap = np.abs(np.vdot(uniform_psi, psi))**2
+    return overlap
 
 def read_h5_attributes(filename):
     """
