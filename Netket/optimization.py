@@ -44,6 +44,38 @@ def rotate_hi(hi, roll, pitch, yaw):
     R = rotation.rotation_matrix_rpy(roll, pitch, yaw)
     return R@hi
 
+def construct_hamiltonian_bonds_unitary(Jijalphabeta, h, bonds, U):
+    N = h.shape[0]
+    hilbert = nk.hilbert.Spin(s=0.5, N=N)
+
+    Udagger = U.conj().T
+
+    # Pauli matrices as numpy arrays
+    pauli_matrices = [nk.operator.spin.sigmax, nk.operator.spin.sigmay, nk.operator.spin.sigmaz]
+    # Rotated Pauli matrices
+    pauli_rotated = [U @ p @ Udagger for p in pauli_matrices]
+
+    # Define local operators using the rotated matrices
+    def local_op(mat, site):
+        return nk.operator.LocalOperator(hilbert, mat, [site])
+
+    interaction_terms = [
+        Jijalphabeta[bond, alpha, beta] * local_op(pauli_rotated[alpha], i) * local_op(pauli_rotated[beta], j)
+        for (bond, (i, j)) in enumerate(bonds)
+        for alpha in range(3)
+        for beta in range(3)
+        if np.abs(Jijalphabeta[bond, alpha, beta]) > 1e-12
+    ]
+
+    field_terms = [
+        h[i, alpha] * local_op(pauli_rotated[alpha], i)
+        for i in range(N)
+        for alpha in range(3)
+        if np.abs(h[i, alpha]) > 1e-12
+    ]
+
+    ha = sum(interaction_terms, nk.operator.LocalOperator(hilbert)) + sum(field_terms, nk.operator.LocalOperator(hilbert))
+    return ha
 
 DEFAULT_PARAMS = {
         "alpha": 1,  # Hidden unit density
