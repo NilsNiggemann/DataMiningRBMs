@@ -270,3 +270,15 @@ def attach_hypotheses_fields(df, hypotheses):
         df[name] = df["psi_0"].apply(func)
     return df
 
+def mean_amplitude(psi):
+    """
+    Compute the mean amplitude of a vector psi.
+
+    Parameters:
+        psi (array-like): Input vector (can be complex or real).
+
+    Returns:
+        float: The mean amplitude.
+    """
+    psi = np.asarray(psi)
+    return np.mean(np.abs(psi))

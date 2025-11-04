@@ -63,6 +63,7 @@ orbax-checkpoint==0.11.14
 orjson==3.10.18
 packaging==25.0
 parso==0.8.5
+pandas==2.3.3
 pexpect==4.9.0
 pillow==11.3.0
 platformdirs==4.4.0
