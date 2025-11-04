@@ -51,7 +51,10 @@ def construct_hamiltonian_bonds_unitary(Jijalphabeta, h, bonds, U):
     Udagger = U.conj().T
 
     # Pauli matrices as numpy arrays
-    pauli_matrices = [nk.operator.spin.sigmax, nk.operator.spin.sigmay, nk.operator.spin.sigmaz]
+    # pauli_matrices = [nk.operator.spin.sigmax, nk.operator.spin.sigmay, nk.operator.spin.sigmaz]
+    pauli_matrices = [np.array([[0,1],[1,0]], dtype=complex),
+                      np.array([[0,-1j],[1j,0]], dtype=complex),
+                      np.array([[1,0],[0,-1]], dtype=complex)]
     # Rotated Pauli matrices
     pauli_rotated = [U @ p @ Udagger for p in pauli_matrices]
 
