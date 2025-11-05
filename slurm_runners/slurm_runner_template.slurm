@@ -3,19 +3,23 @@
 #SBATCH --output=logs/rbm_opt_%A_%a.out
 #SBATCH --error=logs/rbm_opt_%A_%a.err
 # SBATCH --array=1-$(wc -l < H_idx_list.txt)
-#SBATCH --time=1:00:00
+#SBATCH --time=0:25:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
-# SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:4
 #SBATCH --partition=boost_usr_prod    
-#SBATCH --mem=32G
+#SBATCH --qos=boost_qos_dbg
+#SBATCH --mem=8G
+#SBATCH --account=ict_25_cmsp
 
 # Load any required modules here
 module load cuda
 module load python
+module load openmpi
 
 source ../.venv/bin/activate
 
+export $OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 # Create logs directory if it doesn't exist
 mkdir -p logs
 
