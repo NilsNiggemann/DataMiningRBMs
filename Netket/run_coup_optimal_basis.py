@@ -17,9 +17,6 @@ parser.add_argument('index', type=int, help='The H_idx value to process')
 parser.add_argument('--output_folder', type=str, default="../data/data_optimal_basis_rbm")
 args = parser.parse_args()
 
-# print('Imports succeded', flush=True)
-# exit(0)
-
 
 output_folder = "../data/data_optimal_basis_rbm"
 os.makedirs(output_folder, exist_ok=True)
@@ -38,7 +35,7 @@ H = H_ran
 
 exact_ground_energy, exact_ground_state = nk.exact.lanczos_ed(H, k=1, compute_eigenvectors=True)
 exact_ground_state = exact_ground_state[:,0]
-exact_ground_state
+
 
 try:
     result = minimize(get_rotation_objective(exact_ground_state), x0=[0,0,0], bounds=[(-np.pi, np.pi)]*3)
