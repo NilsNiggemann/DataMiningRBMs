@@ -194,7 +194,7 @@ def generate_params(**kwargs):
     params["out"] = filename
     return params
 
-def write_output(H, vstate, params):
+def write_output(H, vstate, params, k=10):
     psi = vstate.to_array()
     outfile = params.get("out", "output") + ".h5"
     try:
@@ -207,14 +207,16 @@ def write_output(H, vstate, params):
         en_var_steps = None
         en_var = None
     
-    exact_ground_energy, psi_0 = nk.exact.lanczos_ed(H, k=1, compute_eigenvectors=True)
-    psi_0 = psi_0[:, 0]  # Get the ground state vector
-    
+    energies, eigenstates = nk.exact.lanczos_ed(H, k=k, compute_eigenvectors=True)
+    psi_0 = eigenstates[:, 0]  # Get the ground state vector
+    exact_ground_energy = energies[0]
     with h5py.File(outfile, "w") as f:
         f.create_dataset("psi", data=psi)
         f.create_dataset("en_var_steps", data=en_var_steps if en_var_steps is not None else False)
         f.create_dataset("en_var", data=en_var if en_var is not None else False)
-        f.create_dataset("exact_ground_energy", data=exact_ground_energy[0])
+        f.create_dataset("exact_ground_energy", data=exact_ground_energy)
+        f.create_dataset("exact_energies", data=energies)
+        f.create_dataset("exact_eigenstates", data=eigenstates)
         f.create_dataset("psi_0", data=psi_0)
 
         for (key, value) in params.items():
