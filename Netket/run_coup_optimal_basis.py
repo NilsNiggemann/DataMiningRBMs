@@ -9,7 +9,7 @@ sys.path.append("../python")
 from optimization import generate_params, optimize_rbm, write_output, construct_hamiltonian_bonds_rotated
 import rotation
 import parseCouplings
-sys.path.append("../Netket")
+
 
 import argparse
 parser = argparse.ArgumentParser()
@@ -18,7 +18,8 @@ parser.add_argument('--output_folder', type=str, default="../data/data_optimal_b
 args = parser.parse_args()
 
 
-output_folder = "../data/data_optimal_basis_rbm"
+# output_folder = "../data/data_optimal_basis_rbm"
+output_folder = args.output_folder
 os.makedirs(output_folder, exist_ok=True)
 
 input_file = "../python/couplings69.csv"
