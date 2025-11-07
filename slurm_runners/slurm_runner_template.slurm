@@ -2,14 +2,14 @@
 #SBATCH --job-name=rbm_opt_gpu
 #SBATCH --output=logs/rbm_opt_%A_%a.out
 #SBATCH --error=logs/rbm_opt_%A_%a.err
-#SBATCH --array=1-$(wc -l < H_idx_list.txt)%4
+#SBATCH --array=1-230%2
 #SBATCH --time=0:25:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:4
 #SBATCH --partition=boost_usr_prod    
-## SBATCH --qos=boost_qos_dbg
-#SBATCH --qos=boost_qos_lprod
+#SBATCH --qos=boost_qos_dbg
+# SBATCH --qos=boost_qos_lprod
 #SBATCH --mem=10G
 #SBATCH --account=ICT25_CMSP_0
 
