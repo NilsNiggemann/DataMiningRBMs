@@ -53,6 +53,12 @@ def load_outputs_to_dataframe(file_list,attach_attributes=True):
             psi = f["psi"][:]
             psi_0 = f["psi_0"][:]
             en_var = f["en_var"][()] if "en_var" in f else None
+            try:
+                exact_energies = f["exact_energies"][:] 
+                exact_eigenstates = f["exact_eigenstates"][:] 
+            except KeyError:
+                exact_energies = None
+                exact_eigenstates = None
             exact_ground_energy = _arr_to_num(f["exact_ground_energy"][()])
             infid = infidelity(psi, psi_0)
             if en_var is not None:
@@ -67,6 +73,8 @@ def load_outputs_to_dataframe(file_list,attach_attributes=True):
                 "E_exact": exact_ground_energy,
                 "E_var": en_var,
                 "infidelity": infid,
+                "exact_energies": exact_energies,
+                "exact_eigenstates": exact_eigenstates,
                 "file" : fname
             }
 
