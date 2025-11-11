@@ -3,7 +3,7 @@
 #SBATCH --output=logs/rbm_opt_%A_%a.out
 #SBATCH --error=logs/rbm_opt_%A_%a.err
 #SBATCH --array=1-230%2
-#SBATCH --time=0:25:00
+#SBATCH --time=0:15:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:4
@@ -39,7 +39,8 @@ H_IDX=$(sed "${SLURM_ARRAY_TASK_ID}q;d" H_idx_list.txt)
 cd ../Netket
 
 # Run the Python script with the index
-python run_coup_optimal_basis.py $H_IDX
+python run_coup_unrotated_basis.py $H_IDX
+#python run_coup_optimal_basis.py $H_IDX
 # python run_coup_optimal_basis.py 10
 #
 echo "DONE, exiting from slurm........"
