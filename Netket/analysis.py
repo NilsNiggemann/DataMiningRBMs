@@ -36,7 +36,7 @@ def read_folder_to_dataframe(folder, suffix=".h5"):
     file_list = [os.path.join(folder, f) for f in os.listdir(folder) if f.endswith(suffix)]
     return load_outputs_to_dataframe(file_list)
 
-def load_outputs_to_dataframe(file_list,attach_attributes=True):
+def load_outputs_to_dataframe(file_list,attach_attributes=True,load_eigenstates=True):
     """
     Reads a list of HDF5 output files and returns a DataFrame with columns:
     'psi', 'psi_0', 'Delta_E' (energy difference between variational and exact).
@@ -55,10 +55,17 @@ def load_outputs_to_dataframe(file_list,attach_attributes=True):
             en_var = f["en_var"][()] if "en_var" in f else None
             try:
                 exact_energies = f["exact_energies"][:] 
-                exact_eigenstates = f["exact_eigenstates"][:] 
             except KeyError:
                 exact_energies = None
+
+            if load_eigenstates:
+                try: 
+                    exact_eigenstates = f["exact_eigenstates"][:]
+                except KeyError:
+                    exact_eigenstates = None
+            else:
                 exact_eigenstates = None
+
             exact_ground_energy = _arr_to_num(f["exact_ground_energy"][()])
             infid = infidelity(psi, psi_0)
             if en_var is not None:
