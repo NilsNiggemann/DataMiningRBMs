@@ -290,3 +290,8 @@ def mean_amplitude(psi):
     """
     psi = np.asarray(psi)
     return np.mean(np.abs(psi))
+
+def uniform_state_overlap(psi):
+    uniform_psi = np.ones(len(psi)) / np.sqrt(len(psi))
+    overlap = np.abs(np.vdot(uniform_psi, psi))**2
+    return overlap
