@@ -143,6 +143,8 @@ def _get_topk_indices_jit(coefs, k):
     return ordered
 
 
+
+
 # Mark masks_tuple, inv_perm_tuple and n as static to avoid hashing traced objects
 @partial(jit, static_argnums=(1, 2, 3))
 def _reconstruct_from_trunc_jit(trunc, masks_tuple, inv_perm_tuple, n):
@@ -176,4 +178,31 @@ def compress_and_reconstruct_cached(full_coeffs, num_kept, hilbert):
     psi_jnp = compress_and_reconstruct_cached_jit(full_coeffs_jnp, int(num_kept), masks_tuple, inv_perm_tuple, n)
     return np.array(jax.device_get(psi_jnp))
 
+####################### Picks lagest abs(imaginary parts) ###########################
+
+@partial(jit, static_argnums=(1,))
+def _get_topkIMAG_indices_jit(coefs, k):
+    # k is expected to be a Python int (static)
+    k = max(int(k), 1)
+    absvals = jnp.abs(jnp.imag(coefs))
+    part = jnp.argpartition(-absvals, k - 1)[:k]
+    ordered = part[jnp.argsort(-absvals[part])]
+    return ordered
+
+@partial(jit, static_argnums=(1, 2, 3, 4))
+def compress_and_reconstruct_IMAG_cached_jit(full_coeffs, num_kept, masks_tuple, inv_perm_tuple, n):
+    # num_kept is static (Python int); pass it to the static _get_topk_indices_jit
+    top_idx = _get_topkIMAG_indices_jit(full_coeffs, num_kept)
+    trunc = jnp.zeros_like(full_coeffs).at[top_idx].set(full_coeffs[top_idx])
+    psi = _reconstruct_from_trunc_jit(trunc, masks_tuple, inv_perm_tuple, n)
+    return psi
+
+
+# Convenience Python wrapper that uses the cache and returns a NumPy array
+def compress_and_reconstruct_cached_IMAG(full_coeffs, num_kept, hilbert):
+    masks_tuple, inv_perm_tuple, n = prepare_fwht_meta_cached(hilbert)
+    full_coeffs_jnp = jnp.array(full_coeffs, dtype=jnp.complex128)
+    # ensure num_kept is a Python int when passed
+    psi_jnp = compress_and_reconstruct_IMAG_cached_jit(full_coeffs_jnp, int(num_kept), masks_tuple, inv_perm_tuple, n)
+    return np.array(jax.device_get(psi_jnp))
 
