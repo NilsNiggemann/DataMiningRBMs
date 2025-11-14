@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PATHONPC="/scratch/shared"
+PATHONPC="/scratch/shared/"
 LOCALPATH="./data"
 
 SSH_HOSTNAME=$RBM_DATA_HOST
@@ -24,8 +24,10 @@ done
 
 if [[ ${MODE} == "GET" ]]; then
 	#pull from remote
-	(set -x ; rsync -Lazuve ssh ${SSH_HOSTNAME}:${PATHONPC} ${LOCALPATH})
+	(set -x ; rsync -Lazuve ssh ${SSH_HOSTNAME}:${PATHONPC}/data/* ${LOCALPATH})
+	# echo ${SSH_HOSTNAME}:${PATHONPC} ${LOCALPATH}
 elif [[ ${MODE} == "PUT" ]]; then
 	#push to remote
 	(set -x ; rsync -Lazuve ssh ${LOCALPATH} ${SSH_HOSTNAME}:${PATHONPC})
+	# echo ${LOCALPATH} ${SSH_HOSTNAME}:${PATHONPC}
 fi
