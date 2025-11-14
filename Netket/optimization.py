@@ -194,7 +194,9 @@ def generate_params(**kwargs):
     params["out"] = filename
     return params
 
-def write_output(H, vstate, params, k=10):
+def write_output(H, vstate, params, k=10,k_states_save=None):
+    if k_states_save is None:
+        k_states_save = k
     psi = vstate.to_array()
     outfile = params.get("out", "output") + ".h5"
     try:
@@ -216,7 +218,7 @@ def write_output(H, vstate, params, k=10):
         f.create_dataset("en_var", data=en_var if en_var is not None else False)
         f.create_dataset("exact_ground_energy", data=exact_ground_energy)
         f.create_dataset("exact_energies", data=energies)
-        f.create_dataset("exact_eigenstates", data=eigenstates)
+        f.create_dataset("exact_eigenstates", data=eigenstates[:, 0:k_states_save])
         f.create_dataset("psi_0", data=psi_0)
 
         for (key, value) in params.items():
