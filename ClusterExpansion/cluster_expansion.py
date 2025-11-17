@@ -206,3 +206,43 @@ def compress_and_reconstruct_cached_IMAG(full_coeffs, num_kept, hilbert):
     psi_jnp = compress_and_reconstruct_IMAG_cached_jit(full_coeffs_jnp, int(num_kept), masks_tuple, inv_perm_tuple, n)
     return np.array(jax.device_get(psi_jnp))
 
+############# modded - cluster expn without taking log ##########################
+####### USAGE : 
+#MODcluster_coeffs_test_exact = fwht_coeffs_in_cluster_col_order(psi_test_exact, hilb_test)
+#MODcluster_coeffs_test_RBM = fwht_coeffs_in_cluster_col_order(psi_test_RBM, hilb_test)
+#MODinfidels_exact_opt = [infidelity(MODcompress_and_reconstruct_cached(MODcluster_coeffs_test_exact, compr_idx, hilb_test), psi_test_exact) 
+#           for compr_idx in compr_idx_list]
+#MODinfidels_RBM_opt = [infidelity(MODcompress_and_reconstruct_cached(MODcluster_coeffs_test_RBM, compr_idx, hilb_test), psi_test_exact) 
+#           for compr_idx in compr_idx_list]
+##############
+@partial(jit, static_argnums=(1, 2, 3))
+def MOD_reconstruct_from_trunc_jit(trunc, masks_tuple, inv_perm_tuple, n):
+    # convert static tuples to jnp arrays (these will be constants in compiled function)
+    masks_jnp = jnp.array(masks_tuple, dtype=jnp.int32)
+    inv_perm_jnp = jnp.array(inv_perm_tuple, dtype=jnp.int32)
+
+    coeffs_by_index = jnp.zeros(n, dtype=jnp.complex128)
+    coeffs_by_index = coeffs_by_index.at[masks_jnp].set(trunc)
+    logpsi_by_index = fwht(coeffs_by_index)
+    logpsi = logpsi_by_index[inv_perm_jnp]
+    psi = logpsi
+    return psi
+
+
+# Mark num_kept, masks_tuple, inv_perm_tuple and n as static arguments
+@partial(jit, static_argnums=(1, 2, 3, 4))
+def MODcompress_and_reconstruct_cached_jit(full_coeffs, num_kept, masks_tuple, inv_perm_tuple, n):
+    # num_kept is static (Python int); pass it to the static _get_topk_indices_jit
+    top_idx = _get_topk_indices_jit(full_coeffs, num_kept)
+    trunc = jnp.zeros_like(full_coeffs).at[top_idx].set(full_coeffs[top_idx])
+    psi = MOD_reconstruct_from_trunc_jit(trunc, masks_tuple, inv_perm_tuple, n)
+    return psi
+
+
+# Convenience Python wrapper that uses the cache and returns a NumPy array
+def MODcompress_and_reconstruct_cached(full_coeffs, num_kept, hilbert):
+    masks_tuple, inv_perm_tuple, n = prepare_fwht_meta_cached(hilbert)
+    full_coeffs_jnp = jnp.array(full_coeffs, dtype=jnp.complex128)
+    # ensure num_kept is a Python int when passed
+    psi_jnp = MODcompress_and_reconstruct_cached_jit(full_coeffs_jnp, int(num_kept), masks_tuple, inv_perm_tuple, n)
+    return np.array(jax.device_get(psi_jnp))
