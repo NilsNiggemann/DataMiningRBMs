@@ -2,19 +2,35 @@
 import numpy as np 
 import sys, os
 sys.path.append('../Netket/')
-os.environ["JAX_PLATFORM_NAME"] = "cpu"
-import netket as nk
-from jax import numpy as jnp
-import itertools
-from scipy.special import comb
-from jax import jit, vmap
-import jax
-import matplotlib.pyplot as plt 
-from cluster_expansion import fwht_coeffs_in_cluster_col_order, prepare_fwht_meta_cached, compress_and_reconstruct_cached, _get_topk_indices_jit
 import analysis
 from analysis import std_phase, ipr, pca_entropy, renyi_entropy, mean_amplitude, uniform_state_overlap, infidelity
-import pandas as pd
-from functools import partial
+
+os.environ["JAX_PLATFORM_NAME"] = "cpu"
+import netket as nk
+from cluster_expansion import *
+
+def infidelity(psi, psi_0):
+    """
+    Compute the infidelity between two state vectors psi and psi_0.
+
+    Parameters:
+        psi (array-like): First state vector (can be complex or real).
+        psi_0 (array-like): Second state vector (can be complex or real).
+
+    Returns:
+        float: The infidelity value (1 - |<psi_0|psi>|^2).
+    """
+    psi = np.asarray(psi)
+    psi_0 = np.asarray(psi_0)
+    # Normalize both vectors
+    norm_psi = np.linalg.norm(psi)
+    norm_psi_0 = np.linalg.norm(psi_0)
+    if norm_psi == 0 or norm_psi_0 == 0:
+        return np.nan
+    psi = psi / norm_psi
+    psi_0 = psi_0 / norm_psi_0
+    fidelity = np.abs(np.vdot(psi_0, psi))**2
+    return 1.0 - fidelity
 
 
 import argparse
@@ -28,7 +44,6 @@ file_start = args.file_start
 numFiles = args.num_files
 
 
-# %%
 hypotheses = {
     "std_phase" : std_phase,
     "IPR" : ipr,
@@ -48,7 +63,8 @@ df_opt = analysis.attach_hypotheses_fields(df_opt, hypotheses)
 df_opt["idx"] = df_opt["file"].apply(lambda x: int(os.path.basename(x).split('_')[2]))
 print(len(df_opt))
 
-# %%
+
+
 n_sites_test = 16
 hilb_test = nk.hilbert.Spin(0.5, n_sites_test)
 compr_idx_list = sorted(np.array(list(set(np.logspace(1, 16, 100, base=2, dtype=int)))))  
@@ -61,8 +77,8 @@ def compute_infidelity_matrices(df, hilb, compr_idx_list):
     for i, row in df.iterrows():
         psi_test_exact = np.array(row['psi_0'])
         psi_test_RBM = np.array(row['psi'])
-        cluster_coeffs_test_exact = fwht_coeffs_in_cluster_col_order(np.log(psi_test_exact), hilb)
-        cluster_coeffs_test_RBM = fwht_coeffs_in_cluster_col_order(np.log(psi_test_RBM), hilb)
+        cluster_coeffs_test_exact = fwht_coeffs_in_cluster_col_order(psi_test_exact, hilb)
+        cluster_coeffs_test_RBM = fwht_coeffs_in_cluster_col_order(psi_test_RBM, hilb)
         prepare_fwht_meta_cached(hilb)
         for j, compr_idx in enumerate(compr_idx_list):
             psi_rec_exact = compress_and_reconstruct_cached(cluster_coeffs_test_exact, compr_idx, hilb)
@@ -75,7 +91,7 @@ infidels_exact_opt_mat, infidels_RBM_opt_mat = compute_infidelity_matrices(df_op
 
 # %%
 import h5py
-outfile = f'../data/cluster_expansion_analysis/expansion_infidelities_{file_start}_{file_start+numFiles-1}.h5'
+outfile = f'../data/cluster_expansion_analysis_exp/expansion_infidelities_{file_start}_{file_start+numFiles-1}.h5'
 
 import os
 os.makedirs(os.path.dirname(outfile), exist_ok=True)
