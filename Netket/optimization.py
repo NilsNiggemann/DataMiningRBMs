@@ -90,6 +90,7 @@ DEFAULT_PARAMS = {
         "symmetries": None,  # List or array of symmetry operations (e.g., permutation matrices), or None if not used
         "param_dtype": np.complex64, # Data type for model parameters
         "holomorphic": 'auto', # Whether to use holomorphic SR
+        "model_type": 'RBM', # Type of model to use ('RBM' or 'RBMModPhase')
     }
 
 def is_holomorphic(param_dtype):
@@ -108,13 +109,16 @@ def optimize_rbm(H, params):
     param_dtype = merged_params["param_dtype"]
     hilbert = H.hilbert
     symmetries = merged_params["symmetries"]
+    modeltype = merged_params["model_type"]
+
     if merged_params["holomorphic"] == 'auto':
         holomorphic = is_holomorphic(param_dtype)
     else:
         holomorphic = merged_params["holomorphic"]
-
     if symmetries is not None:
         model = nk.models.RBMSymm(alpha=alpha, symmetries=symmetries, use_visible_bias=True, use_hidden_bias=True,param_dtype=param_dtype)
+    elif modeltype == 'RBMModPhase':
+        model = nk.models.RBMModPhase(alpha=alpha, use_hidden_bias=True,param_dtype=param_dtype)
     else:
         model = nk.models.RBM(alpha=alpha, use_visible_bias=True, use_hidden_bias=True,param_dtype=param_dtype)
 
