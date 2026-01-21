@@ -94,6 +94,89 @@ def load_outputs_to_dataframe(file_list,attach_attributes=True,load_eigenstates=
     df = pd.DataFrame(data)
     return df
 
+def _load_single_h5_file(fname, attach_attributes=True, load_eigenstates=True):
+    """
+    Helper function to load a single HDF5 file. Used by load_outputs_to_dataframe_mult_thread.
+    
+    Parameters:
+        fname (str): Path to HDF5 file.
+        attach_attributes (bool): Whether to attach HDF5 file attributes to the output dict.
+        load_eigenstates (bool): Whether to load exact eigenstates.
+    
+    Returns:
+        dict: Dictionary with loaded data.
+    """
+    with h5py.File(fname, "r") as f:
+        psi = f["psi"][:]
+        psi_0 = f["psi_0"][:]
+        en_var = f["en_var"][()] if "en_var" in f else None
+        try:
+            exact_energies = f["exact_energies"][:] 
+        except KeyError:
+            exact_energies = None
+
+        if load_eigenstates:
+            try: 
+                exact_eigenstates = f["exact_eigenstates"][:]
+            except KeyError:
+                exact_eigenstates = None
+        else:
+            exact_eigenstates = None
+
+        exact_ground_energy = _arr_to_num(f["exact_ground_energy"][()])
+        infid = infidelity(psi, psi_0)
+        if en_var is not None:
+            delta_e = np.abs((en_var - exact_ground_energy)/exact_ground_energy)
+        else:
+            delta_e = None
+
+        val_dict ={
+            "psi": psi,
+            "psi_0": psi_0,
+            "Delta_E": delta_e,
+            "E_exact": exact_ground_energy,
+            "E_var": en_var,
+            "infidelity": infid,
+            "exact_energies": exact_energies,
+            "exact_eigenstates": exact_eigenstates,
+            "file" : fname
+        }
+
+        if attach_attributes:
+            attrs = dict(f.attrs)
+            val_dict.update(attrs)
+
+        return val_dict
+
+def load_outputs_to_dataframe_mult_thread(file_list, attach_attributes=True, load_eigenstates=True, num_workers=4):
+    """
+    Reads a list of HDF5 output files in parallel using multithreading and returns a DataFrame.
+    Useful for speeding up I/O when loading many files.
+
+    Parameters:
+        file_list (list of str): List of HDF5 file paths.
+        attach_attributes (bool): Whether to attach HDF5 file attributes to the output dict.
+        load_eigenstates (bool): Whether to load exact eigenstates.
+        num_workers (int): Number of worker threads to use (default=4).
+
+    Returns:
+        pd.DataFrame: DataFrame with columns ['psi', 'psi_0', 'Delta_E', ...].
+    """
+    from concurrent.futures import ThreadPoolExecutor
+    
+    data = []
+    
+    with ThreadPoolExecutor(max_workers=num_workers) as executor:
+        futures = [
+            executor.submit(_load_single_h5_file, fname, attach_attributes, load_eigenstates)
+            for fname in file_list
+        ]
+        for future in futures:
+            data.append(future.result())
+
+    df = pd.DataFrame(data)
+    return df
+
 def mean_phase(psi):
     """
     Compute the mean phase of a vector psi.
