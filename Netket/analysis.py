@@ -368,6 +368,40 @@ def attach_hypotheses_fields(df, hypotheses):
         df[name] = df["psi_0"].apply(func)
     return df
 
+def attach_hypotheses_fields_mult_thread(df, hypotheses, num_workers=4):
+    """
+    Computes new columns for the dataframe using the provided hypotheses functions in parallel.
+    Each function in hypotheses is applied to the 'psi_0' column of the dataframe using multithreading.
+    
+    Parameters:
+        df (pd.DataFrame): DataFrame with 'psi_0' column containing state vectors.
+        hypotheses (dict): Dictionary mapping hypothesis names to functions.
+        num_workers (int): Number of worker processes to use (default=4).
+    
+    Returns:
+        pd.DataFrame: DataFrame with new columns for each hypothesis.
+    """
+    from concurrent.futures import ThreadPoolExecutor
+    
+    psi_0_values = df["psi_0"].values
+    
+    def apply_hypothesis(name, func):
+        """Apply a single hypothesis function to all psi_0 values"""
+        results = [func(psi) for psi in psi_0_values]
+        return name, results
+    
+    # Apply all hypotheses in parallel using multithreading
+    with ThreadPoolExecutor(max_workers=num_workers) as executor:
+        futures = [
+            executor.submit(apply_hypothesis, name, func)
+            for name, func in hypotheses.items()
+        ]
+        for future in futures:
+            name, results = future.result()
+            df[name] = results
+    
+    return df
+
 def mean_amplitude(psi):
     """
     Compute the mean amplitude of a vector psi.
