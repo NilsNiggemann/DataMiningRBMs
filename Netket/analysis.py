@@ -94,7 +94,7 @@ def load_outputs_to_dataframe(file_list,attach_attributes=True,load_eigenstates=
     df = pd.DataFrame(data)
     return df
 
-def _load_single_h5_file(fname, attach_attributes=True, load_eigenstates=True):
+def _load_single_h5_file(fname, attach_attributes=True, load_eigenstates=False):
     """
     Helper function to load a single HDF5 file. Used by load_outputs_to_dataframe_mult_thread.
     
@@ -111,9 +111,12 @@ def _load_single_h5_file(fname, attach_attributes=True, load_eigenstates=True):
         psi_0 = f["psi_0"][:]
         en_var = f["en_var"][()] if "en_var" in f else None
         try:
-            exact_energies = f["exact_energies"][:] 
+            exact_energies = f["exact_energies"][:]
+            E_gap = exact_energies[1] - exact_energies[0] # already sorted from lanczos_ed
+            assert sorted(exact_energies) == list(exact_energies)
         except KeyError:
             exact_energies = None
+            E_gap = None
 
         if load_eigenstates:
             try: 
@@ -139,7 +142,8 @@ def _load_single_h5_file(fname, attach_attributes=True, load_eigenstates=True):
             "infidelity": infid,
             "exact_energies": exact_energies,
             "exact_eigenstates": exact_eigenstates,
-            "file" : fname
+            "file" : fname,
+            "E_gap": E_gap
         }
 
         if attach_attributes:

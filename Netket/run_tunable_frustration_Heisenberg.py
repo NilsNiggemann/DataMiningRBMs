@@ -22,9 +22,11 @@ os.makedirs(output_folder, exist_ok=True)
 run_idx = args.index  # Use the command line argument
 
 g, hi, H = thm.get_J1J2_Hamiltonian(run_idx)
+#explicitly hermitize H
+H = (H + H.getH()) / 2
 
-exact_ground_energy, exact_ground_state = nk.exact.lanczos_ed(H, k=1, compute_eigenvectors=True)
-exact_ground_state = exact_ground_state[:,0]
+# exact_ground_energy, exact_ground_state = nk.exact.lanczos_ed(H, k=1, compute_eigenvectors=True)
+# exact_ground_state = exact_ground_state[:,0]
 
 model_name = thm.get_model_name(run_idx)
 J2_value = thm.get_J2(run_idx)
@@ -48,8 +50,8 @@ params = generate_params(
 )
 print(f"Parameters: {params}", flush=True)
 try:
-    # out = optimize_rbm(H, params)
-    # write_output(H, out, params)
+    out = optimize_rbm(H, params)
+    write_output(H, out, params, k_states_save=3)
     print("done", flush=True)
 except Exception:
     print("failed", flush=True)
