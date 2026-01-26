@@ -23,7 +23,7 @@ run_idx = args.index  # Use the command line argument
 
 g, hi, H = thm.get_J1J2_Hamiltonian(run_idx)
 #explicitly hermitize H
-H = (H + H.getH()) / 2
+H = (H + H.H )/ 2
 
 # exact_ground_energy, exact_ground_state = nk.exact.lanczos_ed(H, k=1, compute_eigenvectors=True)
 # exact_ground_state = exact_ground_state[:,0]
