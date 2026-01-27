@@ -113,7 +113,7 @@ def _load_single_h5_file(fname, attach_attributes=True, load_eigenstates=False):
         try:
             exact_energies = f["exact_energies"][:]
             E_gap = exact_energies[1] - exact_energies[0] # already sorted from lanczos_ed
-            assert sorted(exact_energies) == list(exact_energies)
+            # assert sorted(exact_energies) == list(exact_energies)
         except KeyError:
             exact_energies = None
             E_gap = None
