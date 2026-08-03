@@ -56,40 +56,56 @@ function find_Clifford_for_plus_state(weights::Vector{<:Real}, paulis::Vector{<:
     Ws = Ws[perm]
     Ps = Ps[perm]
 
-    return _find_clifford_sorted_weights(Ws, Ps)
+    return _find_clifford_sorted_weights(Ws, Ps; clique_objective_weights = Ws, target_basis = :plus)
 end
 
-function _find_clifford_sorted_weights(Ws, Ps)
+
+
+"""
+    _find_clifford_sorted_weights(Ws, Ps; clique_objective_weights=Ws, target_basis=:plus)
+
+`target_basis = :plus`          -> clique terms become X-strings; C|+...+> = |psi>
+`target_basis = :computational` -> clique terms become Z-strings; C|0...0> = |psi>
+"""
+function _find_clifford_sorted_weights(Ws, Ps; clique_objective_weights = Ws,
+                                        target_basis::Symbol = :plus)
     N_qubits = nqubits(Ps[1])
-    # creating the graph adj_matrix
-    adj_matrix = fill(false,length(Ps),length(Ps))
+
+    adj_matrix = fill(false, length(Ps), length(Ps))
     for i in eachindex(Ps)
-        adj_matrix[i,i] = true
+        adj_matrix[i, i] = true
         for j in i+1:length(Ps)
-            c = comm(Ps[i],Ps[j]) == 0 
-            adj_matrix[i,j] = c
-            adj_matrix[j,i] = c
+            c = comm(Ps[i], Ps[j]) == 0
+            adj_matrix[i, j] = c
+            adj_matrix[j, i] = c
         end
     end
 
-    # Creating the stabilizer state
-    clique = max_weight_clique(adj_matrix, Ws)
-    # Build generators with a minus sign so selected high-weight terms
-    # contribute negatively to <psi|H|psi>, i.e. lower <+|C H C^\dagger|+>.
-    psi_long = canonicalize!(Stabilizer(-Ps[clique]))
-    psi = psi_long[1:min(length(psi_long),N_qubits)]
+    clique = max_weight_clique(adj_matrix, clique_objective_weights)
 
-    # "fill-in" orthogonal stabilizers
+    psi_long = canonicalize!(Stabilizer(-Ps[clique]))
+    psi = psi_long[1:min(length(psi_long), N_qubits)]
+
     psi = Stabilizer(tab(MixedDestabilizer(psi))[N_qubits+1:2N_qubits])
     canonicalize!(psi)
 
-    # create Clifford operator that maps |+++> to |psi>
-    perm = vcat(N_qubits+1:2N_qubits,1:N_qubits)
-    tableau = tab(canonicalize!(MixedDestabilizer(psi)))[perm]
+    full_tab = tab(canonicalize!(MixedDestabilizer(psi)))
+
+    if target_basis == :plus
+        # swap stabilizers/destabilizers -> C|+...+> = |psi>, clique -> X-strings
+        perm = vcat(N_qubits+1:2N_qubits, 1:N_qubits)
+        tableau = full_tab[perm]
+    elseif target_basis == :computational
+        # standard order -> C|0...0> = |psi>, clique -> Z-strings (diagonal!)
+        tableau = full_tab
+    else
+        error("Unknown target_basis: $target_basis")
+    end
+
     C = CliffordOperator(tableau)
-    # H_all = foldl(*, [CliffordOperator(sHadamard(i), N_qubits) for i in 1:N_qubits]) # alternatively rotate to z basis
-    # C = C * H_all
-    Ps = [C*P for P in Ps]
+    Cinv = inv(C)
+    Ps = [Cinv * P for P in Ps]
+
     return Ws, Ps, C
 end
 
