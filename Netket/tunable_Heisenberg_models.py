@@ -135,16 +135,23 @@ def get_J1J2kagome_Hamiltonian(J1, J2, Lx, Ly, pbc = True):
     hi = nk.hilbert.Spin(s=1/2, N=g.n_nodes)
     H = 0
     
+    bondset = set()  # To keep track of added bonds and avoid double counting
     for i in g.nodes():
         for t in J1_bonds:
             j = get_site(g, i, t)
-            H += J1 * S_S(hi, i, j)
+            if (i, j) not in bondset and (j, i) not in bondset:
+                H += J1 * S_S(hi, i, j)
+                bondset.add((i, j))
+                bondset.add((j, i))
 
         _,_,subl = g.basis_coords[i]
         if subl == 0: #0 type sites do not have a J2 bond
             continue
         for t in J2bonds:
             j = get_site(g, i, t)
-            H += J2 * S_S(hi, i, j)
+            if (i, j) not in bondset and (j, i) not in bondset:
+                H += J2 * S_S(hi, i, j)
+                bondset.add((i, j))
+                bondset.add((j, i))
 
     return g, hi, H

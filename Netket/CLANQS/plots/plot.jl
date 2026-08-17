@@ -137,10 +137,11 @@ cd(@__DIR__)
 
 honeycomb_cliff = JSON.parsefile("../logs/kitaev_honeycomb_clifford.json")
 honeycomb_original = JSON.parsefile("../logs/kitaev_honeycomb_original.json")
-toric_cliff = JSON.parsefile("../logs/toric_code_clifford.json")
-toric_original = JSON.parsefile("../logs/toric_code_original.json")
+toric_cliff = JSON.parsefile("../logs/toric_code_perturbed_clifford.json")
+toric_original = JSON.parsefile("../logs/toric_code_perturbed_original.json")
 e_0_honey = honeycomb_original["exact_energy"]
 e_0_toric = toric_original["exact_energy"]
+##
 with_theme(theme_SimpleTicks()) do 
 
     fig = Figure(size = (800, 600), fontsize = 20)
@@ -207,3 +208,60 @@ with_theme(theme_SimpleTicks()) do
 end
 
 ##
+with_theme(theme_SimpleTicks()) do 
+
+    fig = Figure(size = (1100, 400), fontsize = 20)
+    axkwargs = (;xminorticksvisible = true, xminorticks = IntervalsBetween(5), yminorticks = IntervalsBetween(5), yminorticksvisible = true, )
+    axlog_tc = Axis(fig[1, 1], xlabel = "Iteration", ylabel = L"$\frac{|E - E_0|}{|E_0|}$", yscale = log10; axkwargs...)
+
+    axlog_hc = Axis(fig[1, 2], xlabel = "Iteration", yscale = log10,
+    # yticklabelsvisible = false, ylabelvisible = false
+    ; axkwargs...)
+
+    ax_hc_inset = insetAtPoint(fig, axlog_hc, Point2f(3500, -0.07), (50,50), title = L"Honeycomb $$", titlesize = 16)
+    hidedecorations!(ax_hc_inset)
+    ax_tc_inset = insetAtPoint(fig, axlog_tc, Point2f(3500, -1), (50,50), title = L"Toric Code $$", titlesize = 16)
+    hidedecorations!(ax_tc_inset)
+
+    plot_kitaev_honeycomb_lattice!(ax_hc_inset)
+    plot_toric_code_lattice!(ax_tc_inset)
+
+    let
+        iters, en_avg = get_iter_en(toric_original, window_size=10)
+        en_diff = en_avg .- e_0_toric
+
+        e_err = abs.((en_avg .- e_0_toric) ./ e_0_toric)
+        lines!(axlog_tc, iters, e_err, label = L"Original$$", color = :grey)
+    end
+        
+    let 
+        iters, en_avg = get_iter_en(honeycomb_original, window_size=10)
+        en_diff = en_avg .- e_0_honey
+        e_err = abs.((en_avg .- e_0_honey) ./ e_0_honey)
+        lines!(axlog_hc, iters, e_err, label = L"Original$$", color = :grey)
+    end
+
+    let 
+        iters, en_avg = get_iter_en(honeycomb_cliff, window_size=10)
+        en_diff = en_avg .- e_0_honey
+        e_err = abs.((en_avg .- e_0_honey) ./ e_0_honey)
+        lines!(axlog_hc, iters, e_err, label = L"optimized$$", color = :black, linewidth = 3)
+    end
+    let
+        iters, en_avg = get_iter_en(toric_cliff, window_size=10)
+        en_diff = en_avg .- e_0_toric
+        e_err = abs.((en_avg .- e_0_toric) ./ e_0_toric)
+        lines!(axlog_tc, iters, e_err, label = L"optimized$$", color = :black, linewidth = 3)
+    end
+
+    axislegend(axlog_tc, position = :ct, framevisible = false,merge=true)
+    # axislegend(axlog, position = :rt, framevisible = false)
+
+    # linkxaxes!(ax_tc, axlog_tc)
+    # linkxaxes!(ax_hc, axlog_hc)
+    # linkyaxes!(axlog_tc, axlog_hc)
+    # linkyaxes!(ax_tc, ax_hc)
+    save("kitaev_toric_energy_convergence.pdf", fig)
+    fig
+    
+end
