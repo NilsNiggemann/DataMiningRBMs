@@ -1,0 +1,1 @@
+try TFI theta = 0.45pi : mu is always large initially quench is independent of g_f

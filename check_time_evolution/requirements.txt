@@ -1,0 +1,16 @@
+h5py==3.14.0
+matplotlib==3.10.6
+netket==3.19.2
+jax==0.5.3
+jaxlib==0.5.3
+flax==0.10.6
+optax==0.2.5
+jaxtyping==0.3.2
+numba==0.61.2
+numpy==2.2.6
+optuna==4.5.0
+pandas==2.3.3
+scipy==1.15.3
+jupyter
+scikit-learn
+xgboost
