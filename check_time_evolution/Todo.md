@@ -1,0 +1,1 @@
+- [ ] try time evolution with transformers. Use Leonardo to be able to use GPU as a test job. see if the hard quenches stay hard.
