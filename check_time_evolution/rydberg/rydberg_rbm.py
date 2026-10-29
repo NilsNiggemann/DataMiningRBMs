@@ -82,6 +82,11 @@ if __name__ == "__main__":
     os.makedirs("data/rbm", exist_ok=True)
     t_start = time.time()
     s = spec(ID, lat, init, g)
+    if os.environ.get("BASIS"):  # rotated local frame (basis_opt.py): 'z' or a data/basis/*.npz
+        from basis_opt import rotated_spec
+        b = os.environ["BASIS"]
+        s = rotated_spec(s, b)
+        out = f"{out[:-4]}_{'z' if b == 'z' else os.path.basename(b)[:-4]}.npz"
     N, ts = s["N"], s["t_save"]
     ts = ts[ts <= float(os.environ.get("TMAX", np.inf)) + 1e-9]  # optional shorter window (used for the N = 16 repeats)
     max_rss = 1e9 if N <= 12 else 2e9  # bytes, see clear_if_big; keeps 26 parallel runs under the 40 GB budget
