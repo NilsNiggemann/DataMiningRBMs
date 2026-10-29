@@ -9,6 +9,7 @@
 \graphicspath{{../quench2d/figs/}{../rydberg/figs/}}
 \usepackage{microtype}
 \usepackage{placeins}
+\usepackage{enumitem}
 \emergencystretch=3em
 
 \newcommand{\inff}{I}
@@ -40,24 +41,55 @@ an \emph{RBM advantage}: states that are hard for matrix product states (MPS) bu
 the result. In the weakly driven 2D Rydberg Ising quench the RBM keeps the infidelity below $10^{-3}$ for $1.6$--$12$
 times the time the entanglement needs to become MPS-hard, also at $N=16$ (near-classical RBM advantage). In the 2D TFI
 benchmark quench, and in every other genuinely non-classical family, proxy onset, RBM failure and entanglement
-saturation coincide: we found no quantum RBM advantage.
+saturation coincide: we found no quantum RBM advantage. In the Rydberg quench at $\Omega/V_{nn}=0.1$, measuring each spin
+along an optimised local axis delays the failure of the $\alpha=1$ RBM from $t=1.65$ to $2.1$--$2.4$ (units of
+$1/V_{nn}$), but changes the late-time infidelity by less than a factor $2$.
 \end{abstract}
 
 \section{Overview}
-\begin{itemize}
-  \item \emph{Question.} Does the cumulant proxy $\mu(t)$ (Sec.~\ref{sec:defs}), computed from the exact state alone,
-    predict when an RBM evolved with TDVP stops following a 2D quench, and does it do better than the entanglement
-    entropy $S$?
-  \item \emph{Method.} Exact evolution on 12--16 sites, the proxies at every time step, and full-sum RBM+TDVP runs
-    whose infidelity with the exact state is the ground truth.
-  \item \emph{Part~I} (Secs.~\ref{sec:setup}--\ref{sec:verdict1}): a controlled test with two quench families (field
-    quench, XY-coupling quench) on a $4\times3$ cylinder (1D calibration and a 2D parameter scan in Apps.~\ref{app:cal}, \ref{app:plane}). Answer: yes. $\mu$ orders the RBM failure times and carries information beyond $S$, but it
-    saturates for hard quenches.
-  \item \emph{Part~II} (Secs.~\ref{sec:ryd}--\ref{sec:verdict2}): a screen of experimentally relevant quenches for
-    states that are MPS-hard but RBM-easy, discussed through two families: the 2D Rydberg Ising quench (R1) and the
-    2D TFI benchmark (G4); all other families are in Apps.~\ref{app:rydsetup}--\ref{app:stage3}. Answer: only
-    near-classical quenches give an RBM advantage; there is no quantum RBM advantage.
-\end{itemize}
+\emph{Method.} Exact evolution on 12--16 sites, the proxies (Sec.~\ref{sec:defs}) at every time step, and full-sum
+RBM+TDVP runs whose infidelity with the exact state is the ground truth.
+
+\paragraph{Part~I} (Secs.~\ref{sec:setup}--\ref{sec:verdict1}): field quench and XY-coupling quench on a $4\times3$
+cylinder (1D calibration and a 2D parameter scan in Apps.~\ref{app:cal}, \ref{app:plane}).
+\begin{enumerate}
+  \item \emph{Does $\mu(t)$, computed from the exact state alone, predict when the RBM stops following the quench?}
+    Yes. The onset time $\tmur$ orders the failure time $\tinf$ with Spearman $0.91$ (field) and $0.99$ (XY coupling),
+    usually as a slightly early warning (Figs.~\ref{fig:edheat}, \ref{fig:edcuts}, \ref{fig:tstar}).
+  \item \emph{Does $\mu$ do better than the entanglement entropy $S$?}
+    Yes. At fixed $S$, $\mu$ keeps a partial correlation of $0.81$ with $\log\inff$; at fixed $\mu$, $S$ keeps only
+    $0.32$ (Fig.~\ref{fig:scatter}, Table~\ref{tab:corr}).
+  \item \emph{Where does $\mu$ fail?}
+    It saturates at $\approx-5$ and cannot rank hard quenches, where $\mu_{\mathrm{ph}}$ and $w_{\mathrm{hi}}$ do
+    better (Fig.~\ref{fig:scatter}); it overestimates the difficulty at strong ferromagnetic XY coupling
+    (Fig.~\ref{fig:edcuts}a,c); and the relative threshold depends on the initial state (Fig.~\ref{fig:robust}).
+  \item \emph{Does a larger RBM change this?}
+    No. $\alpha=2$ lowers $\inff$ by $1.2$--$4.4\times$ in easy quenches and barely moves hard ones
+    (Fig.~\ref{fig:edcuts}c,d).
+\end{enumerate}
+
+\paragraph{Part~II} (Secs.~\ref{sec:ryd}--\ref{sec:verdict2}): a screen of experimentally relevant quenches for
+states that are MPS-hard but RBM-easy, discussed through the 2D Rydberg Ising quench (R1) and the 2D TFI benchmark
+(G4); all other families are in Apps.~\ref{app:rydsetup}--\ref{app:stage3}.
+\begin{enumerate}[resume]
+  \item \emph{Is there a near-classical RBM advantage?}
+    Yes. In R1 at $\Omega/V_{nn}=0.01$ the RBM keeps $\inff<10^{-3}$ up to $t=12$--$18$ while the state is MPS-hard
+    from $t_S=1.5$; the window survives at $N=16$ but does not grow (Figs.~\ref{fig:main-rows-hl},
+    \ref{fig:ansatz-hl}a--c, \ref{fig:scaling}).
+  \item \emph{Is there a quantum RBM advantage?}
+    No. No screened point with $\eta\ge0.3$ keeps both proxies below $-10$ until $t_S$ (Fig.~\ref{fig:map}); in G4
+    the proxy onset, RBM failure and entanglement saturation coincide (Figs.~\ref{fig:main-rows-hl},
+    \ref{fig:ansatz-hl}d--f).
+  \item \emph{Do the proxies remain valid in the new families?}
+    Mostly. $\mu_{\mathrm{ph}}$ meets the Spearman and partial-correlation criteria in R1, G4, D3 and I1 but fails in
+    R4 (Table~\ref{tab:verdict2}, Fig.~\ref{fig:main-rows}); in R1 the RBM fails at $\approx0.8\,\tprox$, so the
+    proxy window overstates the RBM window.
+  \item \emph{Does an optimised local basis help the RBM?}
+    Only at early times. In R1 at $\Omega/V_{nn}=0.1$, measuring each spin along an optimised axis lowers
+    $\max(\mu,\mu_{\mathrm{ph}})$ by $1.2$--$2.4$ around $t\approx1.5$, and the RBM infidelity there by up to
+    $6$--$11\times$ ($\tinf$: $1.65\to2.1$--$2.4$). Later the proxies drop by typically $0.2$, and the infidelities agree
+    within a factor $2$ (Sec.~\ref{sec:basis}, Fig.~\ref{fig:basis-proxies}).
+\end{enumerate}
 
 \section{Definitions}
 \label{sec:defs}
@@ -81,8 +113,23 @@ All quantities refer to $N$ spins in the $\sigma^z$ basis, $s\in\{\pm1\}^N$, $\c
 
 \paragraph{Entanglement and MPS cost.}
 \begin{itemize}
-  \item $S=-\mathrm{tr}\rho_L\log\rho_L$ (nats), with $L$ the first $N/2$ sites of the site ordering (half cut).
-  \item $S_{\mathrm{Page}}=\frac N2\log2-\frac12$: the mean half-cut entropy of a random state; $S_{\mathrm{rel}}=S/S_{\mathrm{Page}}$.
+  \item \emph{Entanglement entropy} $S$. We split the $N$ sites into two halves: $L$, the first $N/2$ sites in the
+    site ordering, and $R$, the rest. $S=-\mathrm{tr}\,\rho_L\ln\rho_L$ is the von Neumann entropy of the reduced
+    state $\rho_L=\mathrm{tr}_R|\psi\rangle\langle\psi|$ of the \emph{exact} state (never of the RBM). With the
+    natural logarithm $S$ is measured in nats; it runs from $0$ for a product state to $\frac N2\ln2$ ($4.16$ for
+    $N=12$). The halves on the 2D clusters:
+    \begin{itemize}
+      \item $4\times3$ cylinder (sites $i=xL_y+y$): columns $x=0,1$ against $x=2,3$. Because $x$ is periodic, the
+        cut runs along two lines and crosses $6$ nearest-neighbour bonds.
+      \item $4\times4$ torus: the same with columns of four sites; $8$ bonds.
+      \item 12-site kagome torus: the six sites of the first two unit cells; $8$ bonds.
+      \item chains: left against right half; $1$ bond.
+    \end{itemize}
+    An exact MPS that follows the site ordering needs a bond dimension of at least $e^S$ at this cut; for an
+    approximate MPS, $e^S$ is a rough guide.
+  \item \emph{MPS-hard (at this size)}: $S\ge1.83$ nats for $N=12$ ($2.52$ for $N=16$), the threshold of the plan:
+    half the average entropy of a random state, $\frac12(\frac N2\ln2-\frac12)$. It corresponds to $e^S\approx6$
+    ($12$), which is small in absolute terms (see Limitations of Part~II).
   \item $\chi_\varepsilon$: the smallest number of Schmidt values whose discarded weight is $\le\varepsilon=10^{-3}$, at
     the cut with the largest $S$. Its cap at that cut is $2^{\min(\ell,N-\ell)}$; we report the fraction
     $(\chi_\varepsilon-1)/(\mathrm{cap}-1)$, which is $0$ for a product state and $1$ at the cap.
@@ -102,7 +149,7 @@ All quantities refer to $N$ spins in the $\sigma^z$ basis, $s\in\{\pm1\}^N$, $\c
   \item $\tmur$: first time with $\mu>\mu_0+5$, $\mu_0=\mu(0)$ (relative threshold, Part~I).
   \item $t^*_w$: first $t$ with $w_{\mathrm{hi}}>1\%$; $t_{\mathrm{dev}}$: first $t$ with $\mu>\mu_0+1.5$ (end of the
     plateau of $\mu$).
-  \item $t_S$: first $t$ with $S_{\mathrm{rel}}\ge0.5$ (``MPS-hard'' at this size).
+  \item $t_S$: first $t$ at which the state is MPS-hard ($S\ge1.83$ nats for $N=12$).
   \item $\inff=1-|\langle\psi_{\mathrm{ED}}|\psi_{\mathrm{RBM}}\rangle|^2/(\|\psi_{\mathrm{ED}}\|^2\|\psi_{\mathrm{RBM}}\|^2)$:
     RBM infidelity; $\tinf$: first $t$ with $\inff>10^{-3}$.
   \item \emph{Proxy window} $\tprox/t_S$ and \emph{RBM window} $\tinf/t_S$: how long after the state becomes
@@ -174,7 +221,8 @@ $t\le1.5$.
     an eigenstate and $\mu_{\mathrm{ph}}=-\infty$), half-cut entanglement entropy $S$, and $\log_{10}$ of the
     infidelity $\inff$ of the $\alpha=1$ RBM (field quench: only the 10 values of $h_f$ where TDVP was run). Lines:
     relative onset time $\tmur$ ($\mu>\mu_0+5$, white solid), end of the plateau $t_{\mathrm{dev}}$
-    ($\mu>\mu_0+1.5$, white dotted), RBM failure time $\tinf$ ($\inff>10^{-3}$, cyan dashed). White insets (here and
+    ($\mu>\mu_0+1.5$, white dotted), RBM failure time $\tinf$ ($\inff>10^{-3}$, cyan dashed). Black contours of the entanglement entropy,
+    drawn on all panels: $S=1.83$ nats (solid; the MPS-hard threshold) and $S=1$, $3$ nats (dashed). White insets (here and
     in later heatmaps): final Hamiltonian, initial state and the $4\times3$ cylinder (stubs: bonds across the
     periodic boundary).}
   \label{fig:edheat}
@@ -465,7 +513,9 @@ torus). With $n_i=(1-Z_i)/2$ and $V_{ij}=V_{nn}(a/r_{ij})^6$, the Rydberg Hamilt
 with Rabi frequency $\Omega$, detuning $\Delta$, and time in units of $1/V_{nn}$.
 \begin{itemize}
   \item \textbf{R1, 2D Rydberg Ising quench}~\cite{Lienhard18,GuardadoSanchez18}: $H_{\mathrm{Ryd}}$ with $\Delta=0$
-    from $|{+}x\rangle$, control parameter $\Omega/V_{nn}$ from $0$ (classical) to $1$ (13 values), $t\le3/\Omega$.
+    from $|{+}x\rangle$, control parameter $\Omega/V_{nn}$ from $0$ (classical) to $1$ (13 values). The run length
+    $t_{\max}=\min(300,\max(10,3/\Omega))$ keeps the drive phase $\Omega t_{\max}=3$ fixed where possible; without a
+    drive ($\Omega=0$) the cap $t_{\max}=300$ applies.
     Small $\Omega$ is near-classical ($\eta=0.005$ at $\Omega/V_{nn}=0.01$, $0.45$ at $1$).
   \item \textbf{G4, 2D TFI benchmark}~\cite{SchmittHeyl20}: Schmitt and Heyl simulated 2D TFI quenches with
     convolutional NQS at $h_f=h_c/10$, $h_c$ and $2h_c$ ($h_c=3.04438$). We use $H=-\sum_{i<j}(a/r_{ij})^6Z_iZ_j-h_f\sum_iX_i$
@@ -486,10 +536,10 @@ $\inff\approx3\times10^{-6}$). Runs stop once $\inff\ge0.5$. Solver settings: Ap
   \centering
   \includegraphics[width=\linewidth]{map}
   \caption{Every screened point (976 points, 37 families, 81 cluster/initial-state combinations), placed by its
-    largest half-cut entropy relative to Page (vertical) and by the largest value of (a)~$\mu_{\mathrm{ph}}$, (b)~$\mu$
-    reached up to $t_S$ (or over the whole run if $S_{\mathrm{rel}}$ never reaches $0.5$). Colour: non-classicality
-    $\eta$. The yellow upper-left region (MPS-hard, proxies below $-10$) is where a quantum RBM advantage would sit; it
-    is empty. The points at the floor $-30$ are exactly classical.}
+    largest entanglement entropy $\max_tS$ (vertical; dotted: MPS-hard thresholds, $1.83$ nats for $N=12$ and $2.52$ for $N=16$) and by the largest value of (a)~$\mu_{\mathrm{ph}}$, (b)~$\mu$
+    reached up to $t_S$ (or over the whole run if the state never becomes MPS-hard). Colour: non-classicality
+    $\eta$. A quantum RBM advantage would appear as a non-classical point ($\eta\ge0.3$, green to yellow) left of the
+    dashed line and above the MPS-hard line of its cluster size; there is none. The points at the floor $-30$ are exactly classical.}
   \label{fig:map}
 \end{figure}
 
@@ -513,7 +563,7 @@ Per-family results of the screen are in App.~\ref{app:screen}.
     Insets as in Fig.~\ref{fig:edheat}. Columns: $\mu$, $\mu_{\mathrm{ph}}$, half-cut entropy $S$ (grey squares:
     $\chi_\varepsilon$ at its cap), and $\log_{10}\inff$ for the $\alpha=1$ RBM (white: run stopped at $\inff\ge0.5$).
     Lines: $\tmu$ (white solid), $\tph$ (white dotted), $\tinf$ (cyan dashed). Red triangles: experimental or benchmark
-    values of $g$. R1 is plotted against $t/t_{\max}(g)$, $t_{\max}=\min(300,\max(10,3/\Omega))$.}
+    values of $g$. R1 is plotted against $t/t_{\max}(g)$, with run length $t_{\max}=\min(300,\max(10,3/\Omega))$ ($300$ at $\Omega=0$).}
   \label{fig:main-rows-hl}
 \end{figure}
 
@@ -530,8 +580,8 @@ In the weakly driven 2D Rydberg Ising quench the RBM follows a volume-law state 
 (Figs.~\ref{fig:main-rows-hl}, \ref{fig:ansatz-hl}a--c).
 \begin{itemize}
   \item \emph{RBM window.} At $\Omega/V_{nn}=0.01$ the infidelity stays below $10^{-3}$ up to $t=12$ ($\alpha=1$,
-    Jastrow), $15$ ($\alpha=2$) and $18$ ($\alpha=4$), while $S_{\mathrm{rel}}\ge0.5$ from $t_S=1.5$ on and reaches
-    $1.13$: an RBM window of $8$--$12$. At $\Omega/V_{nn}=0.05$ the RBM is accurate up to $t=2.4$ ($\alpha=1$), $3.0$
+    Jastrow), $15$ ($\alpha=2$) and $18$ ($\alpha=4$), while the state is MPS-hard from $t_S=1.5$ on and $S$ reaches
+    $4.1$ nats: an RBM window of $8$--$12$. At $\Omega/V_{nn}=0.05$ the RBM is accurate up to $t=2.4$ ($\alpha=1$), $3.0$
     ($\alpha=2$) and $9.3$ ($\alpha=4$), an RBM window of $1.6$--$6$. For $\alpha=1$ the window closes at
     $\Omega/V_{nn}\approx0.15$.
   \item \emph{More hidden units help, a Jastrow factor does not.} Going from $\alpha=1$ to 4 delays $\tinf$ by
@@ -549,8 +599,208 @@ In the weakly driven 2D Rydberg Ising quench the RBM follows a volume-law state 
   \item \emph{The window shrinks with $\Omega$.} $\tmu\Omega\approx0.15$--$0.75$ for $\Omega/V_{nn}\le0.2$, while
     $t_S\approx1.0$--$1.5$ is set by the Ising couplings; the proxy window closes at $\Omega/V_{nn}\approx0.1$--$0.2$.
 \end{itemize}
+\paragraph{Unexpected failure at $\Omega=0$.} Without a drive the RBM should be easiest to run, yet it fails.
+At $\Omega=0$ the evolution is purely diagonal: the amplitudes stay constant, the phase is exactly two-body
+($\mu=\mu_{\mathrm{ph}}=-\infty$ at all times), and a Jastrow factor represents the state exactly, while the entropy
+reaches $S=3.6$ nats. Nevertheless the $\alpha=1$ RBM drifts away: $\inff$ grows slowly from
+$3\times10^{-6}$ at $t=10$ to $5\times10^{-4}$ at $t=30$, crosses $10^{-3}$ at $t=39$ and reaches $0.63$ at $t=57$
+(bottom strip of Fig.~\ref{fig:main-rows-hl}d). The RBM window is still large ($\approx25$), but there is no reason in
+the physics for any failure. The same happens for the undriven Rydberg-dressed quench from the same start (R0 at
+$\theta=\pi/2$, App.~\ref{app:stage3}): there the RBM fails at $t=52$, $68$ and $44$ for $\alpha=1$, $2$ and $4$, while
+the Jastrow factor stays exact to $10^{-16}$. Since more hidden units do not delay the failure, it is most likely
+caused by the TDVP integration (time step, regularisation of the nearly singular metric near the product start)
+rather than by missing expressivity. We have not tested this. Two direct checks would settle it: rerunning R1 at
+$\Omega=0$ with a tighter integrator tolerance and pseudo-inverse cutoff, and with RBM$\times$Jastrow, whose exact
+solution keeps the hidden units at zero. One caveat: an exact RBM encoding of a generic two-body phase pattern
+uses one hidden unit per pair, and the number of non-trivial pair phases per site, $n_{\mathrm{eff}}/N$, reaches $5.2$
+here (App.~\ref{app:stage3}), above $\alpha=1$. So expressivity is not ruled out for $\alpha=1$; it is only
+disfavoured by the $\alpha=4$ result of R0.
+
 The same near-classical behaviour appears in Rydberg-dressed interferometry (R6, App.~\ref{app:stage3}), at the
 experimental soft-core radius with an RBM window of $1.5$--$4.5$.
+
+\section{R1 in an optimised local basis: the RBM gains at early times only}
+\label{sec:basis}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{basis_proxies}
+  \caption{Local-basis optimisation of the 2D Rydberg Ising quench (R1: $4\times3$ cylinder, start $|{+}x\rangle$,
+    $\Omega/V_{nn}=0.1$, $\Delta=0$), logarithmic time axis in units of $1/V_{nn}$. Each spin is measured along its own
+    axis: $\psi'=U\psi$ with $U=\bigotimes_iR_y(\theta_i)R_z(\phi_i)$. Colours: $\sigma^z$ basis ($U=1$, black), best
+    fixed basis (red), best time-dependent basis $U(t)$ with frame penalty $\lambda=0.01$ (blue) and $\lambda=1$ (pink).
+    (a)~$\mu$ and (b)~$\mu_{\mathrm{ph}}$ of $\psi'$. Stars: $\mu$ (a) and $\mu_{\mathrm{ph}}$ (b) of the basis that
+    minimises $\mu_{\max}=\max(\mu,\mu_{\mathrm{ph}})$ at that time, optimised separately at $t=1.65$, $4.95$ and $30$
+    with $U$ fixed on $[0,t]$. Dotted: onset threshold $-10$. (c)~$\log_{10}\inff$ of the $\alpha=1$ RBM evolved with
+    TDVP in each frame. (d)~$\log_{10}\inff$ of a supervised fit of the same RBM to $\psi'(t)$ (a chain of infidelity
+    minimisations along $t$): median (line) and range (band) of three seeds. Dashed: $\inff=10^{-3}$.}
+  \label{fig:basis-proxies}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{basis_angles}
+  \caption{Optimal measurement axes for R1 at $\Omega/V_{nn}=0.1$ (setting as in Fig.~\ref{fig:basis-proxies}). Spin $i$
+    is measured along the axis tilted by $\theta_i$ from $z$ at azimuth $\phi_i$ (radians). In (a,b) the angles are shown in
+    the equivalent form $0\le\theta_i\le\pi/2$, $-\pi<\phi_i\le\pi$ (an axis and its reverse give the same proxies, and
+    $(-\theta,\phi)$ is the axis $(\theta,\phi+\pi)$). (a)~$\theta_i$ and (b)~$\phi_i$: time-dependent basis with $\lambda=0.01$ (lines,
+    one colour per row $y$ of the cylinder; $\phi_i$ is undefined where $\theta_i\approx0$), best fixed basis (dashed),
+    and the per-time optima at $t=1.65$, $4.95$, $30$ (circles, one per site). (c,d)~$\mu_{\max}=\max(\mu,\mu_{\mathrm{ph}})$
+    at $t=1.65$ and $t=30$ for a uniform basis ($\theta_i=\theta$, $\phi_i=\phi$) on a $61\times61$ grid, over the full range
+    $|\theta|\le\pi/2$, which contains each axis twice; cross: $\sigma^z$ basis. Along $\theta=0$ the basis only adds
+    one-body phases, which leave $\mu_{\max}$ unchanged.}
+  \label{fig:basis-angles}
+\end{figure}
+
+Measuring each spin along an optimised axis instead of $z$ helps the RBM in the Rydberg quench at $\Omega/V_{nn}=0.1$
+only at early times, where it also lowers the proxies most (Figs.~\ref{fig:basis-proxies}, \ref{fig:basis-angles},
+Table~\ref{tab:basis}).
+\begin{itemize}
+  \item \emph{Early times.} Near the time at which the $\sigma^z$-basis RBM fails ($t\approx1.3$--$2.1$), all rotated bases
+    lower $\mu_{\max}=\max(\mu,\mu_{\mathrm{ph}})$ by $1.2$--$2.4$ (at $t=1.65$: $-11.85\to-13.7$ to $-13.9$); before
+    $t\approx1$, outside the times used in the optimisation, the fixed basis raises it by up to $2.3$. Around $t\approx1.5$
+    the RBM infidelity drops by up to $6$--$11\times$
+    (TDVP), and the failure time $\tinf$ moves from $1.65$ to $2.1$--$2.4$ (TDVP) and from $1.95$ to $2.4$--$2.55$
+    (supervised fit). With $t_S=1.35$ (the state is MPS-hard from then on), the TDVP RBM window $\tinf/t_S$ grows from
+    $1.2$ to $1.6$--$1.8$.
+  \item \emph{Late times ($t\gtrsim5$).} $\mu_{\max}$ drops by typically $0.2$ ($0$--$0.8$), and the infidelities of all bases agree
+    within a factor $2$; at $t=30$ they are $0.10$--$0.13$ (supervised fit) and $0.28$--$0.30$ (TDVP).
+  \item A fixed basis does almost as well as a time-dependent one. The per-time and fixed optimal axes are tilted by
+    only $2^\circ$--$7^\circ$ from $z$ (time-dependent bases: up to $12^\circ$).
+\end{itemize}
+
+\paragraph{Objective.} The rotated state is $\psi'=U\psi$ with $U=\bigotimes_iR_y(\theta_i)R_z(\phi_i)$; a further
+$R_z$ on the left would only add one-body phases. We compute $\mu$ and $\mu_{\mathrm{ph}}$ of $\psi'$ as in
+Sec.~\ref{sec:defs} and minimise $\mu_{\max}=\max(\mu,\mu_{\mathrm{ph}})$ rather than $\mu$ alone: in R1 the phase proxy
+is the larger of the two at most times and predicts the infidelity best (Sec.~\ref{sec:r1}), and the first crossing of
+$-10$ by $\mu_{\max}$ is $\tprox$. Two details of the phase:
+\begin{itemize}
+  \item it is unwrapped along $t$ for $U(t')\psi(t')$, on a grid ten times finer than the save grid (a twice coarser
+    grid changes $\mu_{\mathrm{ph}}$ by less than $0.005$);
+  \item the branch at $t=0$ is the exact phase of the product state $U(0)|{+}x\rangle$, a sum of one-body terms. Taking
+    $\arg\psi'$ instead wraps this sum into many-body $2\pi$ jumps that the time unwrapping keeps; with the exact branch,
+    any pure $R_z$ rotation leaves $\mu_{\max}$ unchanged, as it should (checked).
+\end{itemize}
+A failed fit counts as $\mu_{\max}=+10$. In the $\sigma^z$ basis the objective reproduces the stored $\mu(t)$ and
+$\mu_{\mathrm{ph}}(t)$ of the screen to $2\times10^{-6}$. The entanglement entropy $S$ does not change under $U$, so all
+bases are compared at equal $S$. The per-time optima use one time; the fixed and time-dependent bases use 25 times in
+$1.2\le t\le30$, so earlier times are not constrained. Table~\ref{tab:basis} and the figures validate the results on all
+200 save times.
+
+\paragraph{Optimisation.} Three parameter levels: one axis for all sites (2 parameters, scanned on a grid), one axis per
+row $y$ of the cylinder (6 parameters, using the translation symmetry along $x$), and one per site (24). Starts:
+$\sigma^z$, the best grid points, the best optima of the coarser level, sublattice-staggered angles, and 12--32 random
+angles. Algorithms (SciPy): Nelder--Mead, Powell, differential evolution, dual annealing, and basin hopping with
+L-BFGS-B; 99 runs per snapshot time and 89 for the fixed basis of the whole run. In every case all five algorithms
+reach the best value within $0.1$ (within $0.02$ at $t=4.95$, $t=30$ and for the fixed basis). The landscape is flat
+near the optimum at $t=1.65$: 63 runs lie within $0.1$ but only two within $0.02$. The fit-based objective is not
+smooth, so this is evidence, not proof, of a global optimum.
+
+\paragraph{Per-time and fixed bases.} The optimal axes are tilted by $|\theta_i|=0.03$--$0.12$ ($2^\circ$--$7^\circ$)
+from $z$, are nearly the same on the four sites of a row (site-dependent angles gain at most $0.03$ over
+row-dependent ones), and a uniform tilt already gives most of the gain (Fig.~\ref{fig:basis-angles}).
+\begin{itemize}
+  \item \emph{Per-time optima}, for a basis fixed on $[0,t]$: $\mu_{\max}$ drops from $-11.85$ to $-14.13$ at
+    $t=1.65$ (where the $\sigma^z$-basis RBM fails), from $-8.60$ to $-8.99$ at $t=4.95$, and from $-4.67$ to $-5.16$ at
+    $t=30$. The best azimuths differ between the three times (Fig.~\ref{fig:basis-angles}b).
+  \item \emph{Fixed basis for the whole run} (minimising the average of $\mu_{\max}$ over 25 times): $\theta_y=(0.044,
+    0.053, 0.055)$, $\phi_y=(-1.16, -0.76, -1.02)$ for rows $y=0,1,2$. It reaches $-13.67$ at $t=1.65$ (per-time
+    optimum $-14.13$) but only $-4.85$ at $t=30$ (per-time optimum $-5.16$): no single basis is optimal at all times. It
+    lowers both proxies (time averages: $\mu$ $-7.33\to-7.49$, $\mu_{\mathrm{ph}}$ $-6.76\to-6.99$), and the high-order
+    weight $w_{\mathrm{hi}}$ at $t=30$ drops from $0.38$ to $0.33$.
+\end{itemize}
+
+\paragraph{Time-dependent basis.} The angles of each site are cubic splines through six knots ($t=0, 1.5, 4, 9, 18,
+30$; 144 parameters, $U(0)$ free). In the rotated frame the Hamiltonian gains the one-body term
+$i\,(\partial_tU)U^\dagger$, a field of strength $\nu_i$ on site $i$. We minimise the average of $\mu_{\max}$ over 25
+times plus $\lambda F$, with $F=\int_0^{30}\sum_i\nu_i^2\,dt$ and $\lambda=0.01$, $0.1$, $1$.
+\begin{itemize}
+  \item Starts: the fixed basis, row-level splines, and a spline through the per-time optima. All five algorithms at
+    the row level, Nelder--Mead and Powell at the site level; 17 runs per $\lambda$. The best value is reached by a
+    row-level Powell run and by two site-level refinements of it. The global optimisers (differential evolution, dual
+    annealing, basin hopping) end $0.02$--$0.13$ higher within 6000 evaluations, so these optima are less well
+    established than the fixed ones.
+  \item The average of $\mu_{\max}$ over all 200 times is $-7.07$, $-7.12$ and $-7.08$ for $\lambda=1$, $0.1$ and
+    $0.01$, against $-6.96$ for the fixed basis. The peak frame field is $0.011$, $0.14$ and $0.21$; for comparison, the
+    drive is $\Omega/2=0.05$. The value for $\lambda=0.01$, the best on the 25 optimisation times, is not the best on
+    all 200, which suggests that the weakest penalty starts to fit the sampled times.
+  \item The gain over the fixed basis is at $t\lesssim1.5$ ($\mu_{\max}=-16.5$ to $-17.0$ against $-14.6$ at $t=1.05$);
+    from $t\approx2$ on, $\mu_{\max}$ of $U(t)$ is within $0.4$ of that of the fixed basis. $\tprox$ is $3.30$
+    ($\lambda=1$) or $3.45$ ($\lambda\le0.1$), against $3.30$ for the fixed basis.
+\end{itemize}
+
+\begin{table}[t]
+  \centering
+  \caption{R1 at $\Omega/V_{nn}=0.1$ in five local bases, validated on the 200 save times $0<t\le30$. Proxy columns:
+    time average and maximum of $\mu_{\max}=\max(\mu,\mu_{\mathrm{ph}})$, and the proxy onset $\tprox$ (first
+    $\mu_{\max}>-10$). $\eta$: non-classicality of the rotated Hamiltonian (time average for $U(t)$). $F$: frame penalty
+    $\int_0^{30}\sum_i\nu_i^2dt$ (zero for a fixed basis). Supervised fit: chain of fits along $t$, median of three
+    seeds of the failure time $\tinf$ ($\inff>10^{-3}$) and of $\inff$ at $t=1.65$ and $30$. TDVP: the same $\alpha=1$
+    RBM evolved in the rotated frame. --: not run.}
+  \label{tab:basis}
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{lccccccccccc}
+    \toprule
+    & \multicolumn{3}{c}{proxy} & & & \multicolumn{3}{c}{supervised fit} & \multicolumn{3}{c}{TDVP}\\
+    \cmidrule(lr){2-4}\cmidrule(lr){7-9}\cmidrule(lr){10-12}
+    basis & mean & max & $\tprox$ & $\eta$ & $F$ & $\tinf$ & $\inff(1.65)$ & $\inff(30)$ & $\tinf$ & $\inff(1.65)$ & $\inff(30)$\\
+    \midrule
+    $\sigma^z$ & $-6.73$ & $-4.65$ & $2.70$ & $0.050$ & $0$ & $1.95$ & $5.5\times10^{-4}$ & $0.11$ & $1.65$ & $1.1\times10^{-3}$ & $0.30$\\
+    fixed $U$ & $-6.96$ & $-4.85$ & $3.30$ & $0.052$ & $0$ & $2.55$ & $2.1\times10^{-4}$ & $0.10$ & $2.25$ & $2.1\times10^{-4}$ & $0.30$\\
+    $U(t)$, $\lambda=1$ & $-7.07$ & $-4.83$ & $3.30$ & $0.070$ & $0.006$ & $2.55$ & $2.7\times10^{-4}$ & $0.11$ & $2.10$ & $2.7\times10^{-4}$ & $0.28$\\
+    $U(t)$, $\lambda=0.1$ & $-7.12$ & $-4.82$ & $3.45$ & $0.074$ & $0.11$ & -- & -- & -- & -- & -- & --\\
+    $U(t)$, $\lambda=0.01$ & $-7.08$ & $-4.78$ & $3.45$ & $0.061$ & $0.38$ & $2.40$ & $1.8\times10^{-4}$ & $0.13$ & $2.40$ & $1.7\times10^{-4}$ & $0.28$\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{RBM test.} We test the $\alpha=1$ RBM in the fixed basis and in the time-dependent bases with $\lambda=0.01$
+(strongest frame field) and $\lambda=1$ (weakest).
+\begin{itemize}
+  \item \emph{TDVP in the rotated frame.} The Hamiltonian is $H'=UHU^\dagger$ (300 Pauli strings instead of 90; $\eta$
+    rises from $0.050$ to $0.052$--$0.070$ in the tested bases). For $U(t)$, $H'(t)$ is piecewise constant on 200 segments of length $0.15$
+    ($U$ at the midpoint). The RBM is compared with the exact evolution under this $H'(t)$, which differs from
+    $U(t)\psi(t)$ by an infidelity of at most $3\times10^{-6}$. Start and solver settings are those of the $\sigma^z$
+    basis (App.~\ref{app:num}).
+  \item \emph{Supervised fit.} To separate what the RBM can represent from the error of the TDVP evolution, we fit the
+    RBM to $\psi'(t)$ by stochastic-reconfiguration (SR) infidelity minimisation (full sum, diagonal shift $5\times10^{-4}$).
+    The fits form a chain along all 200 save times: each fit starts from the previous one (100 steps, step size $0.3$),
+    the first from the exact product state, and three seeds set the initial hidden weights. Independent fits from a
+    random RBM stall at $\inff\approx1$, because its overlap with $\psi(1.65)$ is $\approx2\times10^{-4}$. At $t\le1.65$,
+    step size $0.3$ with 100 steps agrees within a factor $2$ with step size $0.01$ with 1500 steps, the setting of the
+    ground-state fits.
+  \item \emph{Early times: all rotated bases help} (Fig.~\ref{fig:basis-proxies}c,d, Table~\ref{tab:basis}). For
+    $0.5\le t\le2.5$ the TDVP infidelity is lower than in $\sigma^z$ by up to $6\times$ (fixed basis), $8\times$
+    ($\lambda=1$) and $11\times$ ($\lambda=0.01$, at $t=1.35$), and the supervised infidelity by up to $3$--$6\times$. At
+    $t\le0.75$, where $\inff<3\times10^{-5}$, the rotated frames can be worse (TDVP: up to $5\times$ for
+    $\lambda=0.01$, $3\times$ for the fixed basis; supervised: up to $2.4\times$ for $\lambda=0.01$). The failure times move
+    from $1.65$ to $2.1$--$2.4$ (TDVP) and from $1.95$ to $2.4$--$2.55$ (supervised; seed ranges $1.95$--$2.1$ in
+    $\sigma^z$ and $2.25$--$3.0$ in the rotated bases).
+  \item \emph{Late times: no clear gain.} For $t\ge5$, the ratio of the $\sigma^z$ infidelity to the rotated one stays
+    between $0.9$ and $1.6$ (TDVP) and between $0.8$ and $2.0$ (supervised), without a consistent sign; at $t=30$ the
+    TDVP infidelity is $0.28$--$0.30$ in every basis.
+  \item \emph{Supervised fit versus TDVP.} In every basis the supervised fit stays $2$--$3\times$ below TDVP at late
+    times ($0.10$--$0.13$ against $0.28$--$0.30$ at $t=30$). This part of the TDVP error is therefore error of the TDVP
+    evolution, not missing expressivity. We have not separated the two contributions to it, the accumulated projection
+    error of TDVP and the numerical integration error.
+\end{itemize}
+
+\paragraph{Proxy across bases.} At a fixed early time, $\mu_{\max}$ separates the $\sigma^z$ basis from the rotated
+ones as the infidelity does. At $t=1.65$, $\mu_{\max}=-11.85$ in $\sigma^z$ against $-13.67$ to $-13.93$ in the rotated
+bases, and the TDVP infidelity is $1.1\times10^{-3}$ against $1.7$--$2.7\times10^{-4}$. Among the rotated bases, the
+differences of $0.3$ in $\mu_{\max}$ and of $1.6\times$ in $\inff$ are too small to rank them. The onset $\tprox$ moves
+in the same direction as $\tinf$ ($2.7\to3.3$--$3.45$ against $1.65\to2.1$--$2.4$), but it does not order the rotated
+bases either. Four bases at one parameter point are a small sample for this comparison. We interpret the small
+late-time gain as a sign that, at this weak drive ($\eta=0.05$), the $\sigma^z$ basis is already close to optimal at
+late times. The Ising phases, the main source of the entanglement, are two-body only in $\sigma^z$, so the optimal axes
+stay within a few degrees of $z$.
+
+\paragraph{Limitations.} One parameter point ($\Omega/V_{nn}=0.1$), one cluster ($N=12$) and one ansatz ($\alpha=1$).
+The objective is fit-based and non-smooth, and $\mu_{\mathrm{ph}}$ depends on the unwrapping path, so the optima are
+converged only in the multi-start sense above. The six spline knots and the three values of $\lambda$ were chosen by
+hand. The supervised fits use a chain with step size $0.3$, not independent fits with step size $0.01$ (see above).
+Larger RBMs ($\alpha=2$) were not tested.
 
 \section{G4: no quantum RBM advantage}
 \label{sec:g4}
@@ -560,15 +810,15 @@ In the 2D TFI benchmark, proxy onset, RBM failure and entanglement saturation co
 \begin{itemize}
   \item \emph{The RBM fails at $t_S$.} For $0<h_f\le2.5$ the $\alpha=1$ RBM crosses $10^{-3}$ at $t=0.35$--$0.45$.
     Where the state becomes MPS-hard ($h_f\le1$, $t_S=0.30$--$0.40$), this is at or one save step after $t_S$; for
-    $h_f\ge1.5$ the entropy stays below half the Page value. Close to the initial field ($h_f\ge3$) the quench is
+    $h_f\ge1.5$ the state never becomes MPS-hard. Close to the initial field ($h_f\ge3$) the quench is
     easy ($\tinf=2.95$ at $h_c$, never for $h_f=3.5$--$5$).
   \item \emph{More hidden units barely help.} $\alpha=4$ delays $\tinf$ by at most $1.6\times$ ($h_f=0.304$:
     $0.45\to0.70$; $h_f=1$: $0.40\to0.45$).
   \item \emph{Closest approach.} $h_f=0.6$ ($\eta=0.42$) and $h_f=1$ ($\eta=0.61$) are the only screened points with
-    $\eta\ge0.3$ where $S_{\mathrm{rel}}\ge0.5$ and $\inff<10^{-3}$ hold at the same time, each only at the single save
+    $\eta\ge0.3$ where the state is MPS-hard and $\inff<10^{-3}$ at the same time, each only at the single save
     time $t=t_S$ ($h_f=0.6$: $t_S=0.35$, with $\alpha=1$; $h_f=1$: $t_S=0.40$, with $\alpha=2$ and $4$). The proxies
-    have already fired at $0.30$--$0.35$, and $\inff$ crosses $10^{-3}$ one step later. At $N=12$,
-    $S_{\mathrm{rel}}=0.5$ means $S\approx1.8$ nats, so this is not a meaningful MPS-hard window. At $h_f=h_c/10$
+    have already fired at $0.30$--$0.35$, and $\inff$ crosses $10^{-3}$ one step later. The threshold
+    $S=1.83$ nats corresponds to a bond dimension of only $e^S\approx6$, so this is not a meaningful MPS-hard window. At $h_f=h_c/10$
     ($\eta=0.23$, below the non-classical threshold) the RBM window is $1.9$ ($\alpha=4$).
   \item \emph{The proxies work.} $\mu_{\mathrm{ph}}$ predicts the infidelity best (Spearman $0.94$, $0.93$ at fixed
     $S$; $\mu$: $0.91$; $S$ alone: $0.29$), and fires first (median $\tinf/\tprox=1.33$; the RBM fails first at only
@@ -594,7 +844,7 @@ Three of the four success criteria are met; the quantum RBM advantage is not (Ta
     \toprule
     criterion & result & met\\
     \midrule
-    Near-classical RBM advantage: $S_{\mathrm{rel}}\ge0.5$ with $\inff<10^{-3}$ ($\alpha\le2$ or RBM$\times$Jastrow)
+    Near-classical RBM advantage: MPS-hard ($S\ge1.83$ nats) with $\inff<10^{-3}$ ($\alpha\le2$ or RBM$\times$Jastrow)
       & R1 $\Omega/V_{nn}=0.01$: $t_S=1.5$, $\inff<10^{-3}$ up to $t=12$ ($\alpha=1$), $15$ ($\alpha=2$); R6: up to
         $2.4$--$3.6$ ($\alpha\le2$, $t_S=1.2$--$1.5$); also at $N=16$ & yes\\
     Quantum RBM advantage: the same with $\eta\ge0.3$ and $\mu,\mu_{\mathrm{ph}}<-10$
@@ -613,19 +863,23 @@ Three of the four success criteria are met; the quantum RBM advantage is not (Ta
     window: in R1 the RBM fails at $\approx0.8\,\tprox$.
   \item In non-classical quenches the proxies, the RBM failure and the entanglement saturation coincide within a
     factor $\approx1.3$ on 12--16 sites; we found no counterexample.
+  \item An optimised local basis helps R1 at $\Omega/V_{nn}=0.1$ only at early times ($\tinf$: $1.65\to2.1$--$2.4$,
+    RBM window $1.2\to1.6$--$1.8$); later the infidelities of all bases agree within a factor $2$. In every basis a
+    supervised fit stays $2$--$3\times$ below the TDVP infidelity at late times (Sec.~\ref{sec:basis}).
 \end{itemize}
 
 \paragraph{Limitations.}
 \begin{itemize}
-  \item \emph{Cluster size.} ``MPS-hard'' means $S_{\mathrm{rel}}\ge0.5$ at $N=12$--$16$, i.e.\
-    $S\gtrsim1.8$--$2.5$ nats and $\chi_\varepsilon\le64$--$256$. The step $N=12\to16$ leaves the entropy per boundary
+  \item \emph{Cluster size.} ``MPS-hard'' means $S\ge1.83$ nats at $N=12$ and $S\ge2.52$ at $N=16$, i.e.\
+    $e^S\approx6$--$12$, and $\chi_\varepsilon\le64$--$256$. The step $N=12\to16$ leaves the entropy per boundary
     bond unchanged (Fig.~\ref{fig:scaling}); extrapolating it to a 10-site cut gives $S\gtrsim6.8$ nats,
     $\chi\gtrsim900$, which is a rough lower bound (not sure). The $N=16$ RBMs ran only to $t=15$ and at two families.
   \item \emph{Phase proxy.} The time-unwrapped phase is not reduced modulo $2\pi$, so $\mu_{\mathrm{ph}}$
     flags stabilizer states (S3) as dense. Near nodes ($\mathrm{minlog}\approx-70$, C2/R5) it changes by up to $6$
     under $dt/2$; $\tph$ moved in one of 48 checks.
-  \item \emph{TDVP.} The solver settings (App.~\ref{app:num}) were not varied. The $\Omega=0$ runs show that TDVP
-    error, not expressivity, can dominate (App.~\ref{app:stage3}). Zero initial hidden biases freeze the RBM for odd
+  \item \emph{TDVP.} The solver settings (App.~\ref{app:num}) were not varied. The $\Omega=0$ runs (R1 and R0) show that the RBM can
+    fail even where the exact state is a simple two-body phase state; the cause is most likely TDVP error rather
+    than expressivity, but this was not tested (Sec.~\ref{sec:r1}). Zero initial hidden biases freeze the RBM for odd
     three-body terms (I5). Four $\alpha=4$ runs stopped at the 6\,h limit.
 \end{itemize}
 
@@ -718,8 +972,8 @@ changes $\psi$, $S$ and $\mu$ by less than $10^{-9}$. $\mu_{\mathrm{ph}}$ change
 \paragraph{Triage.} For every $(g,t)$ we record the quantities of Sec.~\ref{sec:defs}. A point is
 \emph{MPS-hard (at this size)} from $t_S$ on. The plan's classes,
 evaluated up to $t_{\max}$, are: (i)~onset ($\mu$ crosses $-10$ after a low plateau), (ii)~near-classical
-($\eta\le0.1$, $S_{\mathrm{rel}}\ge0.5$, $\mu_{\mathrm{ph}}<-10$ throughout), (iii)~quantum ($\eta\ge0.3$,
-$S_{\mathrm{rel}}\ge0.5$, $\mu,\mu_{\mathrm{ph}}<-10$ throughout), (iv)~boring. Because every non-classical run
+($\eta\le0.1$, MPS-hard, $\mu_{\mathrm{ph}}<-10$ throughout), (iii)~quantum ($\eta\ge0.3$,
+MPS-hard, $\mu,\mu_{\mathrm{ph}}<-10$ throughout), (iv)~boring. Because every non-classical run
 eventually saturates the proxies on 12--16 sites, we also use a \emph{window} version: a point is near-classical
 (quantum) if its proxy window is at least two, $\tprox/t_S\ge2$.
 
@@ -747,8 +1001,8 @@ eventually saturates the proxies on 12--16 sites, we also use a \emph{window} ve
 \begin{itemize}
   \item \emph{R0/R6, Rydberg-dressed Ising interferometry}~\cite{Zeiher16,Zeiher17,Borish20}: $|{+}x\rangle$ evolves
     under the soft-core interaction $U_0/(1+(r/R_c)^6)$ (experiment: $R_c/a=2.02$). Without a drive (R0) the phase is
-    exactly two-body, so $\mu=\mu_{\mathrm{ph}}=-\infty$ and a Jastrow factor is exact, while $S$ can reach the Page
-    value. R6 adds a weak drive $\Omega=0.05$.
+    exactly two-body, so $\mu=\mu_{\mathrm{ph}}=-\infty$ and a Jastrow factor is exact, while $S$ grows almost to its
+    maximum. R6 adds a weak drive $\Omega=0.05$.
   \item \emph{R4, Rydberg arrays at fixed blockade radius}~\cite{Ebadi21,Samajdar20,Semeghini21,Verresen21}: quench at
     $\Delta=0$, $R_b/a$ across the experimental values $1.15$ (checkerboard), $1.53$ (ruby) and $2.4$.
   \item \emph{D3, Floquet-engineered dipolar XXZ}~\cite{Scholl22,Geier21}: from $|{+}x\rangle$, $J_z/J_{xy}$ runs from
@@ -769,8 +1023,8 @@ eventually saturates the proxies on 12--16 sites, we also use a \emph{window} ve
     $h_x=0.43$), where they fire only $0.05$ later ($t_S=0.25$, $\tmu=\tph=0.30$).
   \item Near-classical proxy windows $\ge2$: R1 (up to 38 at $\Omega/V_{nn}=0.01$; $\ge2$ for
     $\Omega/V_{nn}\lesssim0.1$), R6 (5--11 for $R_c/a\le1$ on the 16-site tori, 2.6--3.6 on the cylinder) and I1
-    ($2$--$4.7$ for $\kappa\ge3$ on the $4\times4$ torus). R0 is exactly classical (window $\infty$) and reaches
-    $S_{\mathrm{rel}}\approx1$ on 2D clusters but stays at $S_{\mathrm{rel}}\le0.18$ on the chain, where the $r^{-6}$
+    ($2$--$4.7$ for $\kappa\ge3$ on the $4\times4$ torus). R0 is exactly classical (window $\infty$) and becomes
+    MPS-hard on 2D clusters but stays far below the threshold on the chain, where the $r^{-6}$
     phases are effectively nearest-neighbour.
   \item \emph{The plan's strict classes} are almost empty: over a full run up to $t_{\max}$ every non-classical point
     eventually crosses $-10$; only the exactly classical points (R0; R1 and R8 at $\Omega=0$; Q1 at $\beta=0$; G4 at
@@ -787,56 +1041,56 @@ $\mu_{\mathrm{ph}}$, $S$, $\chi_\varepsilon$ fraction over $(g,t)$).
 
 \begin{table}[p]
   \centering
-  \caption{Studied families. $\eta$: median non-classicality over the grid; $S_{\mathrm{rel}}$: largest half-cut
-    entropy relative to Page; ``window'': largest proxy window $\tprox/t_S$ over the points with $\eta>0$ (exactly
+  \caption{Studied families. $\eta$: median non-classicality over the grid; max $S$: largest entanglement
+    entropy in nats over all clusters (12 or 16 sites; MPS-hard from $1.83$ resp.\ $2.52$); ``window'': largest proxy window $\tprox/t_S$ over the points with $\eta>0$ (exactly
     classical points have an infinite window); ``w.$_{\eta\ge.3}$'': the same restricted to $\eta\ge0.3$ (a quantum RBM advantage
     requires $\ge2$). Relevance: why the quench matters, with references.}
   \label{tab:families}
   \scriptsize
   \setlength{\tabcolsep}{3pt}
-  \begin{tabular}{lcp{3.9cm}lrrrrp{4.4cm}}
+  \begin{tabular}{lcp{3.9cm}lrrrrp{4.2cm}}
     \toprule
-    ID & tier & $H_f$, control $g$ & clusters & $\eta$ & $S_{\mathrm{rel}}$ & window & w.$_{\eta\ge.3}$ & relevance\\
+    ID & tier & $H_f$, control $g$ & clusters & $\eta$ & max $S$ & window & w.$_{\eta\ge.3}$ & relevance\\
     \midrule
-    R0 & 1 & Rydberg vdW, $\Omega=\Delta=0$; tilt $\theta$ & 1D, sq, tri, kag & 0 & 1.09 & $\infty$ & -- & Ramsey interferometry in Rydberg-dressed lattices~\cite{Zeiher16,Zeiher17,Borish20}\\
-    R6 & 1 & dressing $U_0/(1+(r/R_c)^6)$, $\Omega=0.05$; $R_c/a$ & sq, tri & 0.01 & 1.13 & 11 & -- & same, soft-core regime~\cite{Zeiher16,Zeiher17}\\
-    R1 & 1 & Rydberg vdW, $\Delta=0$; $\Omega/V_{nn}$ & sq, tri, kag & 0.04 & 1.13 & 38 & 0.54 & 2D Rydberg Ising quenches~\cite{Lienhard18,GuardadoSanchez18}\\
-    G4 & 1 & $-\sum r^{-6}ZZ-h_f\sum X$ from gs($h=4$); $h_f$ & sq & 0.89 & 1.08 & 1.4 & 1.0 & NQS benchmark of 2D TFI quenches~\cite{SchmittHeyl20}\\
-    R4 & 1 & Rydberg, $\Omega=1$, $\Delta=0$; $R_b/a$ & sq, kag, ruby & 0.02 & 0.77 & 0.72 & 0.72 & square/kagome/ruby arrays, toric-code spin liquid~\cite{Ebadi21,Scholl21,Samajdar20,Semeghini21,Verresen21}\\
-    G1 & 1 & Rydberg $R_b/a=1.15$ from gs($\Delta=-2$); $\Delta$ & sq, kag & 0.28 & 0.94 & 0.96 & 0.96 & same~\cite{Ebadi21}\\
-    R5 & 1 & Rydberg, $V_{nn}=12\Omega$; $\Delta/\Omega$ & 1D, sq & 0.05 & 0.59 & 0.08 & -- & many-body scars after $\mathbb Z_2$ quenches~\cite{Bernien17,Turner18}\\
-    C2 & 1 & as R5, $\Delta(t)=\Omega(0.85+0.98\cos\omega_mt)$; $\omega_m/\Omega$ & 1D & 0.08 & 0.47 & 0 & -- & Floquet scar stabilisation~\cite{Bluvstein21}\\
-    D1 & 1 & dipolar XY, axis tilted by $\Theta$ & sq, tri & 1.0 & 0.99 & 0.75 & 0.75 & spin squeezing in dipolar Rydberg arrays~\cite{Bornet23,deLeseleuc19}\\
-    G3 & 1 & dipolar XXZ from gs(XY ferro$-0.2\sum X$); $J_z/J_{xy}$ & sq & 0.93 & 0.32 & 0 & 0 & continuous symmetry breaking~\cite{Chen23}\\
-    D3 & 1 & dipolar XXZ; $J_z/J_{xy}$ & 1D, sq & 0.82 & 0.96 & 0.67 & 0.67 & Floquet-engineered XXZ~\cite{Scholl22,Geier21}\\
-    D4 & 1 & AFM dipolar XY $+\delta\sum\eta_iZ_i$; $\delta$ & tri, kag & 0.61 & 0.97 & 0.31 & 0.31 & proposed dipolar Dirac spin liquid~\cite{Bintz24,Yao18}\\
-    I1 & 1 & $\sum r^{-\kappa}ZZ+0.1\sum X$; $\kappa$ & 1D, sq & 0.07 & 1.12 & 4.7 & -- & trapped-ion long-range Ising~\cite{Richerme14,Jurcevic14,Schachenmayer13,Jurcevic17,Zhang17,Monroe21}\\
-    S3 & 1 & kicked Ising $J=b=\pi/4$, field $h$ & 1D, sq & 0.63 & 1.14 & 1.0 & 1.0 & dual-unitary point~\cite{BKP18,BKP19}\\
-    S3b & 1 & kicked Ising $J=\pi/4$, $h=0$; kick $b$ & 1D, ring, sq & 0.42 & 1.14 & 0.5 & 0.5 & IBM Eagle ``utility'' circuit and its classical simulations~\cite{Kim23,Tindall24,Begusic24}\\
-    Q1 & 1 & QAOA layers (MIS phase, mixer $\beta$) & sq, kag & 0.15 & 1.06 & 2.0 & 1.0 & QAOA on Rydberg arrays and its NQS simulation~\cite{Ebadi22,MedvidovicCarleo21}\\
+    R0 & 1 & Rydberg vdW, $\Omega=\Delta=0$; tilt $\theta$ & 1D, sq, tri, kag & 0 & 5.52 & $\infty$ & -- & Ramsey interferometry in Rydberg-dressed lattices~\cite{Zeiher16,Zeiher17,Borish20}\\
+    R6 & 1 & dressing $U_0/(1+(r/R_c)^6)$, $\Omega=0.05$; $R_c/a$ & sq, tri & 0.01 & 5.51 & 11 & -- & same, soft-core regime~\cite{Zeiher16,Zeiher17}\\
+    R1 & 1 & Rydberg vdW, $\Delta=0$; $\Omega/V_{nn}$ & sq, tri, kag & 0.04 & 5.52 & 38 & 0.54 & 2D Rydberg Ising quenches~\cite{Lienhard18,GuardadoSanchez18}\\
+    G4 & 1 & $-\sum r^{-6}ZZ-h_f\sum X$ from gs($h=4$); $h_f$ & sq & 0.89 & 3.96 & 1.4 & 1.0 & NQS benchmark of 2D TFI quenches~\cite{SchmittHeyl20}\\
+    R4 & 1 & Rydberg, $\Omega=1$, $\Delta=0$; $R_b/a$ & sq, kag, ruby & 0.02 & 3.90 & 0.72 & 0.72 & square/kagome/ruby arrays, toric-code spin liquid~\cite{Ebadi21,Scholl21,Samajdar20,Semeghini21,Verresen21}\\
+    G1 & 1 & Rydberg $R_b/a=1.15$ from gs($\Delta=-2$); $\Delta$ & sq, kag & 0.28 & 4.75 & 0.96 & 0.96 & same~\cite{Ebadi21}\\
+    R5 & 1 & Rydberg, $V_{nn}=12\Omega$; $\Delta/\Omega$ & 1D, sq & 0.05 & 2.98 & 0.08 & -- & many-body scars after $\mathbb Z_2$ quenches~\cite{Bernien17,Turner18}\\
+    C2 & 1 & as R5, $\Delta(t)=\Omega(0.85+0.98\cos\omega_mt)$; $\omega_m/\Omega$ & 1D & 0.08 & 2.37 & 0 & -- & Floquet scar stabilisation~\cite{Bluvstein21}\\
+    D1 & 1 & dipolar XY, axis tilted by $\Theta$ & sq, tri & 1.0 & 5.01 & 0.75 & 0.75 & spin squeezing in dipolar Rydberg arrays~\cite{Bornet23,deLeseleuc19}\\
+    G3 & 1 & dipolar XXZ from gs(XY ferro$-0.2\sum X$); $J_z/J_{xy}$ & sq & 0.93 & 1.62 & 0 & 0 & continuous symmetry breaking~\cite{Chen23}\\
+    D3 & 1 & dipolar XXZ; $J_z/J_{xy}$ & 1D, sq & 0.82 & 4.64 & 0.67 & 0.67 & Floquet-engineered XXZ~\cite{Scholl22,Geier21}\\
+    D4 & 1 & AFM dipolar XY $+\delta\sum\eta_iZ_i$; $\delta$ & tri, kag & 0.61 & 4.91 & 0.31 & 0.31 & proposed dipolar Dirac spin liquid~\cite{Bintz24,Yao18}\\
+    I1 & 1 & $\sum r^{-\kappa}ZZ+0.1\sum X$; $\kappa$ & 1D, sq & 0.07 & 5.49 & 4.7 & -- & trapped-ion long-range Ising~\cite{Richerme14,Jurcevic14,Schachenmayer13,Jurcevic17,Zhang17,Monroe21}\\
+    S3 & 1 & kicked Ising $J=b=\pi/4$, field $h$ & 1D, sq & 0.63 & 5.55 & 1.0 & 1.0 & dual-unitary point~\cite{BKP18,BKP19}\\
+    S3b & 1 & kicked Ising $J=\pi/4$, $h=0$; kick $b$ & 1D, ring, sq & 0.42 & 4.16 & 0.5 & 0.5 & IBM Eagle ``utility'' circuit and its classical simulations~\cite{Kim23,Tindall24,Begusic24}\\
+    Q1 & 1 & QAOA layers (MIS phase, mixer $\beta$) & sq, kag & 0.15 & 5.32 & 2.0 & 1.0 & QAOA on Rydberg arrays and its NQS simulation~\cite{Ebadi22,MedvidovicCarleo21}\\
     \midrule
-    R2 & 2 & Rydberg vdW, tilted/$\mathbb Z_2$ starts & sq & 0.08 & 0.98 & 0.74 & -- & variation of R1\\
-    R3 & 2 & Rydberg, $\Omega=0.1$; $\Delta$ & sq & 0.08 & 1.13 & 5.4 & -- & facilitation~\cite{LesanovskyGarrahan13,Marcuzzi17}\\
-    C1 & 2 & facilitation $\Delta=V_{nn}+\delta$ & 1D & 0.18 & 0.27 & 0 & -- & same\\
-    R7 & 2 & Rydberg, position disorder $\sigma/a$ & sq & 0.04 & 1.12 & 2.8 & -- & disordered Rydberg gases~\cite{Marcuzzi17}\\
-    R8 & 2 & Rydberg + random $\Delta_i\in[-2,2]$ & sq & 0.07 & 1.13 & 8.0 & -- & variation of R1\\
-    R9 & 2 & dual-species vdW; interspecies ratio & sq & 0.05 & 1.13 & 2.4 & -- & dual-species arrays~\cite{Singh22}\\
-    I2 & 2 & dipolar Ising $\sum r^{-3}ZZ+h_x\sum X$ & sq & 0.34 & 1.10 & 1.7 & 1.0 & variation of I1\\
-    I3 & 2 & $-\sum ZZ-0.25\sum X-h_z\sum Z$ & 1D & 0.23 & 0.02 & 0 & -- & confinement~\cite{Kormos17,Tan21}\\
-    I5 & 2 & $\sum_\triangle ZZZ+h_x\sum X$ & tri & 0.16 & 0.90 & 26 & 1.0 & multi-spin terms in Rydberg gauge-theory proposals~\cite{Celi20}\\
-    D2 & 2 & dipolar XY ferro $+h_x\sum X$ & sq & 1.0 & 0.86 & 0.36 & 0.36 & variation of D1\\
-    D5 & 2 & dipolar XY $+\lambda\sum r^{-6}ZZ$ & sq & 0.45 & 0.93 & 0.67 & 0.50 & mixed couplings\\
-    D6 & 2 & diluted dipolar XY; filling & sq & 1.0 & 0.61 & 0.14 & 0.14 & disordered dipolar gases~\cite{Signoles21}\\
-    G2 & 2 & Rydberg $\Delta=3$ from checkerboard gs; $\Omega$ & sq & 0.11 & 0.58 & 0 & 0 & ordered start\\
-    S1 & 2 & toric code $+\epsilon\sum Z$ & tc & 0.69 & 0.77 & 0.14 & 0.14 & toric code on processors~\cite{Satzinger21}; exact RBM~\cite{Deng17}\\
-    S2 & 2 & cluster model $+\epsilon\sum X$ & sq & 1.0 & 1.02 & 0.33 & 0.33 & cluster states~\cite{Raussendorf01,Bluvstein22}\\
-    S4 & 2 & kicked Ising $J=\pi/4+\epsilon$ & 1D & 0.62 & 1.14 & 0.33 & 0.33 & leaving Clifford: magic~\cite{Leone22}\\
+    R2 & 2 & Rydberg vdW, tilted/$\mathbb Z_2$ starts & sq & 0.08 & 3.58 & 0.74 & -- & variation of R1\\
+    R3 & 2 & Rydberg, $\Omega=0.1$; $\Delta$ & sq & 0.08 & 4.14 & 5.4 & -- & facilitation~\cite{LesanovskyGarrahan13,Marcuzzi17}\\
+    C1 & 2 & facilitation $\Delta=V_{nn}+\delta$ & 1D & 0.18 & 0.97 & 0 & -- & same\\
+    R7 & 2 & Rydberg, position disorder $\sigma/a$ & sq & 0.04 & 4.11 & 2.8 & -- & disordered Rydberg gases~\cite{Marcuzzi17}\\
+    R8 & 2 & Rydberg + random $\Delta_i\in[-2,2]$ & sq & 0.07 & 4.14 & 8.0 & -- & variation of R1\\
+    R9 & 2 & dual-species vdW; interspecies ratio & sq & 0.05 & 4.12 & 2.4 & -- & dual-species arrays~\cite{Singh22}\\
+    I2 & 2 & dipolar Ising $\sum r^{-3}ZZ+h_x\sum X$ & sq & 0.34 & 4.02 & 1.7 & 1.0 & variation of I1\\
+    I3 & 2 & $-\sum ZZ-0.25\sum X-h_z\sum Z$ & 1D & 0.23 & 0.08 & 0 & -- & confinement~\cite{Kormos17,Tan21}\\
+    I5 & 2 & $\sum_\triangle ZZZ+h_x\sum X$ & tri & 0.16 & 3.30 & 26 & 1.0 & multi-spin terms in Rydberg gauge-theory proposals~\cite{Celi20}\\
+    D2 & 2 & dipolar XY ferro $+h_x\sum X$ & sq & 1.0 & 3.16 & 0.36 & 0.36 & variation of D1\\
+    D5 & 2 & dipolar XY $+\lambda\sum r^{-6}ZZ$ & sq & 0.45 & 3.41 & 0.67 & 0.50 & mixed couplings\\
+    D6 & 2 & diluted dipolar XY; filling & sq & 1.0 & 1.77 & 0.14 & 0.14 & disordered dipolar gases~\cite{Signoles21}\\
+    G2 & 2 & Rydberg $\Delta=3$ from checkerboard gs; $\Omega$ & sq & 0.11 & 2.14 & 0 & 0 & ordered start\\
+    S1 & 2 & toric code $+\epsilon\sum Z$ & tc & 0.69 & 2.82 & 0.14 & 0.14 & toric code on processors~\cite{Satzinger21}; exact RBM~\cite{Deng17}\\
+    S2 & 2 & cluster model $+\epsilon\sum X$ & sq & 1.0 & 3.73 & 0.33 & 0.33 & cluster states~\cite{Raussendorf01,Bluvstein22}\\
+    S4 & 2 & kicked Ising $J=\pi/4+\epsilon$ & 1D & 0.62 & 4.16 & 0.33 & 0.33 & leaving Clifford: magic~\cite{Leone22}\\
     \midrule
-    I4 & 3 & NN Ising $+h_x\sum X$ & sq & 0.36 & 0.41 & 0 & 0 & control\\
-    S5 & 3 & XY chain (free fermions) & 1D & 1.0 & 0.86 & 0.44 & 0.44 & control\\
-    S6 & 3 & $\sum XX+\Omega\sum Z$ (rotated basis) & sq & 0.98 & 0.44 & 0 & 0 & control\\
-    S7 & 3 & XXZ chain & 1D & 0.94 & 0.73 & 0.17 & 0.17 & control\\
-    C3 & 3 & quantum East & 1D & 0.83 & 0.80 & 0.11 & 0.11 & control\\
+    I4 & 3 & NN Ising $+h_x\sum X$ & sq & 0.36 & 1.51 & 0 & 0 & control\\
+    S5 & 3 & XY chain (free fermions) & 1D & 1.0 & 3.15 & 0.44 & 0.44 & control\\
+    S6 & 3 & $\sum XX+\Omega\sum Z$ (rotated basis) & sq & 0.98 & 1.61 & 0 & 0 & control\\
+    S7 & 3 & XXZ chain & 1D & 0.94 & 2.67 & 0.17 & 0.17 & control\\
+    C3 & 3 & quantum East & 1D & 0.83 & 2.91 & 0.11 & 0.11 & control\\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -865,7 +1119,7 @@ wall-clock limit at $t=2.2$--$6.4$ with $\inff$ still below $0.5$.
     ID & cluster, start & grid ($\alpha=1$) & ansatz points & extra\\
     \midrule
     R6 & \texttt{sq4x3}, $|{+}x\rangle$ & 13 values of $R_c/a$, $t\le60$ & $0.5$, $1.0$, $2.02$ & $N=16$; RBM$\times$Jastrow at $0.5$\\
-    R1 & \texttt{sq4x3}, $|{+}x\rangle$ & 13 values of $\Omega/V_{nn}$, $t\le3/\Omega$ & $0.01$, $0.05$, $0.3$ & $N=16$; RBM$\times$Jastrow at $0.05$\\
+    R1 & \texttt{sq4x3}, $|{+}x\rangle$ & 13 values of $\Omega/V_{nn}$, $t\le t_{\max}(\Omega)$ & $0.01$, $0.05$, $0.3$ & $N=16$; RBM$\times$Jastrow at $0.05$\\
     I1 & \texttt{sq4x3}, $|{+}x\rangle$ & 13 values of $\kappa$, $t\le30$ & $1$, $3$, $6$ & RBM$\times$Jastrow at $6$\\
     R4 & \texttt{kag12}, $|\theta\rangle$ & 14 values of $R_b/a$, $t\le10$ & $1.15$, $1.53$, $2.4$ & --\\
     D3 & \texttt{sq4x3}, $|{+}x\rangle$ & 17 values of $J_z/J_{xy}$, $t\le10$ & $0$, $0.75$, $2$ & --\\
@@ -901,7 +1155,7 @@ wall-clock limit at $t=2.2$--$6.4$ with $\inff$ still below $0.5$.
   \centering
   \includegraphics[width=0.8\linewidth]{scaling}
   \caption{Half-cut entropy per cut boundary bond, $S/n_\partial$, for $N=12$ (\texttt{sq4x3}, black) and $N=16$
-    (\texttt{sq4x4}, red) at four near-classical points; dotted: Page values per bond.}
+    (\texttt{sq4x4}, red) at four near-classical points; dotted: average entropy of a random state, per cut bond.}
   \label{fig:scaling}
 \end{figure}
 
@@ -1005,23 +1259,23 @@ wall-clock limit at $t=2.2$--$6.4$ with $\inff$ still below $0.5$.
 
 \begin{table}[h]
   \centering
-  \caption{Closest candidates to a quantum RBM advantage ($N=12$). $t_S$: first time with $S_{\mathrm{rel}}\ge0.5$
+  \caption{Closest candidates to a quantum RBM advantage ($N=12$). $t_S$: first time the state is MPS-hard ($S\ge1.83$ nats)
     ($\infty$: never); $\tinf$ and $\inff(t_S)$ for the best ansatz tried.}
   \label{tab:gold}
   \scriptsize
   \setlength{\tabcolsep}{3pt}
   \begin{tabular}{lllrrrrrl}
     \toprule
-    ID & $g$ & $\eta$ & $S_{\mathrm{rel}}^{\max}$ & $t_S$ & $\tmu$ / $\tph$ & best $\tinf$ & $\inff(t_S)$ & why it fails\\
+    ID & $g$ & $\eta$ & max $S$ & $t_S$ & $\tmu$ / $\tph$ & best $\tinf$ & $\inff(t_S)$ & why it fails\\
     \midrule
-    S3 & $h=0$ & 0.61 & 1.14 & 2 & 2 / 2 & 2 & 0.99 & $\inff\approx1$ after one save step\\
-    S3 & $h=\pi/4$ & 0.52 & 1.14 & 2 & 2 / 2 & 2 & 0.95 & same\\
-    G4 & $h_f=1.0$ & 0.61 & 0.64 & 0.40 & 0.30 / 0.30 & 0.45 & $2.8\times10^{-4}$ & proxies fire before $t_S$\\
-    D3 & $J_z/J_{xy}=2$ & 0.58 & 0.55 & 1.3 & 0.30 / 0.30 & 0.65 & $9\times10^{-3}$ & RBM fails before $t_S$\\
-    D3 & $J_z/J_{xy}=0.75$ & 0.88 & 0.40 & $\infty$ & 3.75 / 3.85 & $>10$ & -- & never MPS-hard\\
-    I5 & $h_x=0.5$ & 0.31 & 0.48 & $\infty$ & $\infty$ / $\infty$ & 0.05 & -- & never MPS-hard; RBM frozen\\
-    G4 & $h_f=0.304$ & 0.23 & 0.95 & 0.35 & 0.50 / 0.50 & 0.70 & $3.9\times10^{-6}$ & $\eta<0.3$; proxy window $1.4$\\
-    R1 & $\Omega=0.3$ & 0.15 & 1.06 & 1.3 & 1.45 / 1.45 & 1.95 & $3.0\times10^{-5}$ & $\eta<0.3$\\
+    S3 & $h=0$ & 0.61 & 4.16 & 2 & 2 / 2 & 2 & 0.99 & $\inff\approx1$ after one save step\\
+    S3 & $h=\pi/4$ & 0.52 & 4.16 & 2 & 2 / 2 & 2 & 0.95 & same\\
+    G4 & $h_f=1.0$ & 0.61 & 2.34 & 0.40 & 0.30 / 0.30 & 0.45 & $2.8\times10^{-4}$ & proxies fire before $t_S$\\
+    D3 & $J_z/J_{xy}=2$ & 0.58 & 2.01 & 1.3 & 0.30 / 0.30 & 0.65 & $9\times10^{-3}$ & RBM fails before $t_S$\\
+    D3 & $J_z/J_{xy}=0.75$ & 0.88 & 1.46 & $\infty$ & 3.75 / 3.85 & $>10$ & -- & never MPS-hard\\
+    I5 & $h_x=0.5$ & 0.31 & 1.76 & $\infty$ & $\infty$ / $\infty$ & 0.05 & -- & never MPS-hard; RBM frozen\\
+    G4 & $h_f=0.304$ & 0.23 & 3.46 & 0.35 & 0.50 / 0.50 & 0.70 & $3.9\times10^{-6}$ & $\eta<0.3$; proxy window $1.4$\\
+    R1 & $\Omega=0.3$ & 0.15 & 3.87 & 1.3 & 1.45 / 1.45 & 1.95 & $3.0\times10^{-5}$ & $\eta<0.3$\\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -1077,6 +1331,10 @@ All code lives in \texttt{check\_time\_evolution/} and was run with the project 
   \item \texttt{rydberg\_analysis.py}: \texttt{data/rbm\_long.csv}, \texttt{rbm\_tstar.csv},
     \texttt{rbm\_corr.csv}, \texttt{rbm\_order.csv}; \texttt{rydberg\_figs.py screen|map|scaling|main|omega0|ansatz}:
     the Part-II figures in \texttt{figs/} (\texttt{main} and \texttt{ansatz} also write the R1+G4 versions \texttt{*\_hl}).
+  \item \texttt{basis\_opt.py check|snap T|traj|spline LAM|sup BASIS SEED}: local-basis optimisation of
+    Sec.~\ref{sec:basis} (self-checks, per-time optima, fixed basis, time-dependent basis, supervised fits), writing
+    \texttt{data/basis/*.npz}; \texttt{BASIS=data/basis/<file>.npz python rydberg\_rbm.py R1 sq4x3 +x 0.1 rbm1}: TDVP in
+    the rotated frame; \texttt{basis\_figs.py}: \texttt{figs/basis\_proxies.pdf}, \texttt{figs/basis\_angles.pdf}.
   \item References: \texttt{report/refs.bib}; experimental parameters: \texttt{data/exp\_params.csv}.
 \end{itemize}
 
