@@ -11,6 +11,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from plotstyle import STYLE, COLORS, simple_ticks, panel, plt, model_label
 from rydberg2d import lattice
 
+S_RANDOM = lambda N: N / 2 * np.log(2) - 0.5  # average half-cut entropy of a random state (Page); MPS-hard = half of it
+
 FLOOR = -30.0
 MU_LIM = (FLOOR, -2.0)  # shared colour limits for mu and mu_ph in every sheet
 HAM = {  # one-line Hamiltonian + fixed parameters, for titles
@@ -83,21 +85,23 @@ def sheet(f):
 
 
 def overview_map():
-    """Every screened point in the (S_rel, mu_ph) plane, coloured by eta. The proxies are maximised over t <= t_S (the time
-    S reaches 0.5 S_Page), or over the whole run if S never gets there: at late times every non-classical run saturates."""
+    """Every screened point in the (max S, mu_ph) plane, coloured by eta. The proxies are maximised over t <= t_S (the time
+    the state becomes MPS-hard), or over the whole run if S never gets there: at late times every non-classical run saturates."""
     df = pd.read_csv("data/triage.csv")
+    df["S_max"] = df.S_rel_max * S_RANDOM(df.N)  # back to nats
     markers = {1: "o", 2: "s", 3: "^"}
     with plt.rc_context(STYLE):
         fig, axs = plt.subplots(1, 2, figsize=(7.2, 3.2), sharey=True, layout="constrained")
         for ax, (col, xl) in zip(axs, [("muph_at_S", r"$\max_{t\leq t_S}\mu_{\rm ph}$"), ("mu_at_S", r"$\max_{t\leq t_S}\mu$")]):
             for tier, sub in df.groupby("tier"):
-                sc = ax.scatter(sub[col], sub["S_rel_max"], c=sub["eta"], cmap="viridis", vmin=0, vmax=1, s=10,
+                sc = ax.scatter(sub[col], sub["S_max"], c=sub["eta"], cmap="viridis", vmin=0, vmax=1, s=10,
                                 marker=markers[tier], edgecolors="none", label=f"Tier {tier}")
             ax.axvline(-10, ls="--", color="gray", lw=0.8, label=r"threshold $-10$")
-            ax.axhline(0.5, ls=":", color="gray", lw=0.8, label=r"$S_{\rm rel}=0.5$")
+            for N, ls in ((12, ":"), (16, "-.")):
+                ax.axhline(S_RANDOM(N) / 2, ls=ls, color="gray", lw=0.8, label=rf"MPS-hard, $N={N}$")
             ax.set(xlabel=xl + r" (floor $-30$ = exactly few-body)")
             simple_ticks(ax)
-        axs[0].set_ylabel(r"$\max_t S_{N/2}/S_{\rm Page}$")
+        axs[0].set_ylabel(r"$\max_t S$ [nats]")
         for i, ax in enumerate(axs):
             ax.set_title(panel(i), loc="left")
         cbar = fig.colorbar(sc, ax=axs, label=r"non-classicality $\eta$")
@@ -122,11 +126,11 @@ def scaling():
                 t = d["t_g"][k]
                 ax.plot(t, d["S"][k] / ncut, color=color, lw=1, label=rf"$N={N}$ ({lat}, $n_\partial={ncut}$)")
                 page = np.nanmax(d["S"][k] / d["S_rel"][k]) / ncut
-                ax.axhline(page, ls=":", color=color, lw=0.8, label=rf"Page value, $N={N}$")
+                ax.axhline(page, ls=":", color=color, lw=0.8, label=rf"random state, $N={N}$")
             ax.set(xlabel=rf"time $t$ [1/{unit_label(str(d['unit'][0]))[2:]}]", xscale="log", xlim=(t[1], t[-1] if np.isfinite(t[-1]) else None))
             ax.set_title(panel(i) + rf" {ID}, {d['glabel']}$={g:g}$", loc="left")
             simple_ticks(ax)
-        axs[0].set_ylabel(r"$S_{N/2}/n_\partial$ (nats per boundary bond)")
+        axs[0].set_ylabel(r"$S/n_\partial$ [nats per cut bond]")
         fig.legend(*axs[0].get_legend_handles_labels(), loc="outside lower center", ncols=4)
         fig.savefig("figs/scaling.pdf"); fig.savefig("figs/scaling.png", dpi=110)
         plt.close(fig)
@@ -156,7 +160,7 @@ def main_rows(fams=MAIN, out="main_rows"):
     rbm = pd.read_csv("data/rbm_long.csv")
     rbm = rbm[rbm.ansatz == "rbm1"]
     panels = [("mu", r"$\mu$", MU_LIM, "viridis"), ("mu_ph", r"$\mu_{\rm ph}$", MU_LIM, "viridis"),
-              ("S", r"$S_{N/2}$ [nats]", (0, 3.7), "viridis"), ("inf", r"$\log_{10}I$", (-6, 0), "magma")]
+              ("S", r"$S$ [nats]", (0, 6 * np.log(2)), "viridis"), ("inf", r"$\log_{10}I$", (-6, 0), "magma")]
     with plt.rc_context(STYLE):
         fig, axs = plt.subplots(len(fams), 4, figsize=(11, 2.15 * len(fams)), layout="constrained", squeeze=False)
         for r, (ID, lat, init) in enumerate(fams):
@@ -191,7 +195,7 @@ def main_rows(fams=MAIN, out="main_rows"):
                 cbar = fig.colorbar(mesh, ax=ax, label=label, pad=0.01)
                 simple_ticks(cbar.ax)
                 ax.set_title(panel(4 * r + c), loc="left")
-                ax.set_xlabel(r"$t/t_{\max}(g)$, $t_{\max}=3/\Omega$" if scaled else rf"time $t$ [1/{unit_label(str(d['unit'][0]))[2:]}]")
+                ax.set_xlabel(r"$t/t_{\max}(g)$" if scaled else rf"time $t$ [1/{unit_label(str(d['unit'][0]))[2:]}]")
                 simple_ticks(ax)
             # onset times on every panel: same rows, scaled like the data
             tend = np.array([np.nanmax(d["t_g"][k]) for k in order]) if scaled else 1.0
@@ -272,7 +276,7 @@ def ansatz(fams=MAIN, out="ansatz"):
                     ax.plot(run.t, np.log10(run.inf), color=ANSATZ_COLOR[a], lw=1, ls="--" if big else "-",
                             label=r"RBM $\alpha=1$, $N=16$" if big else ANSATZ_LABEL[a])
                 t_S = tstar[(tstar.ID == ID) & (tstar.lat == lat) & np.isclose(tstar.g, g, atol=1e-3)].t_S.min()
-                ax.axvline(t_S, color="gray", lw=0.8, ls=":", label=r"$t_S$: $S=S_{\rm Page}/2$")
+                ax.axvline(t_S, color="gray", lw=0.8, ls=":", label=r"$t_S$: MPS-hard ($S=1.83$)")
                 ax.axhline(-3, color="gray", lw=0.8, ls="--", label=r"$I=10^{-3}$")
                 ax.set(ylim=(-10.5, 0.2), xscale="log", xlim=(fam.t[fam.t > 0].min(), fam.t.max()))  # log t: onset and late times
                 ax.set_title(panel(3 * r + c) + rf" {ID}, $g={g:g}$", loc="left", fontsize=9)

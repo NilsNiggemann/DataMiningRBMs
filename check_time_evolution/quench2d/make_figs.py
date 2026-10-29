@@ -54,6 +54,8 @@ plane = pd.read_csv("data/table_tstar_plane.csv")
 cal = np.load("data/ed_cal1d.npz")
 
 T_MAX = 1.5
+S_HARD = (6 * np.log(2) - 0.5) / 2  # MPS-hard threshold of the plan (half the random-state entropy), N = 12
+S_LEVELS, S_STYLES = [1.0, S_HARD, 3.0], ["--", "-", "--"]  # entanglement contours in nats
 T_NEVER = 1.9  # where 'never' points are drawn in t* plots, just above the time window
 FAM_LABEL = {"A": r"$h_f$", "B": r"$J_{xx}$"}
 FAM_NAME = {"A": "field quench", "B": "XY-coupling quench"}  # descriptive names of families A, B
@@ -75,7 +77,7 @@ def grid(df, col):
 # %% 1D calibration: mu, near-nodes and entanglement for the L = 12 TFI chain
 with plt.rc_context(STYLE):
     fig, axs = plt.subplots(1, 3, figsize=(7.0, 2.4), sharex=True, layout="constrained")
-    quantities = [("mu", r"$\mu$"), ("minlog", r"$\min_s \log(2^N|\psi_s|^2)$"), ("S", r"$S_{L/2}$")]
+    quantities = [("mu", r"$\mu$"), ("minlog", r"$\min_s \log(2^N|\psi_s|^2)$"), ("S", r"$S$ [nats]")]
     for i, (ax, (key, label)) in enumerate(zip(axs, quantities)):
         for g_f, y, color in zip(cal["vals"], cal[key], COLORS):
             ax.plot(cal["times"], y, color=color, lw=1.2, label=rf"$h_f = {g_f:g}$")
@@ -87,18 +89,20 @@ with plt.rc_context(STYLE):
 
 # %% one row per family: mu | mu_ph | S | log10 I of the alpha = 1 RBM over (t, p); onset lines on every panel
 quantities = [("mu", r"$\mu$", "viridis", None), ("mu_ph", r"$\mu_\mathrm{ph}$", "viridis", None),
-              ("S", r"$S$ [nats]", "cividis", None), ("log_inf", r"$\log_{10}I$", "inferno", (-6, 0))]
+              ("S", r"$S$ [nats]", "cividis", (0, 6 * np.log(2))), ("log_inf", r"$\log_{10}I$", "inferno", (-6, 0))]
 with plt.rc_context(STYLE):
     fig, axs = plt.subplots(2, 4, figsize=(11, 4.8), sharex=True, sharey="row", layout="constrained")
     for row, fam in enumerate(["B", "A"]):
         ed = long[long.fam == fam]
         ts = tstar[tstar.fam == fam]
+        ps_S, tt_S, S_grid = grid(ed, "S")
         for col, (key, label, cmap, lims) in enumerate(quantities):
             ax = axs[row, col]
             src = ed[ed.inf_a1.notna()] if key == "log_inf" else ed  # RBM runs exist only on part of the grid
             ps, tt, Z = grid(src, key)
             vmin, vmax = lims if lims else (None, None)
             mesh = ax.pcolormesh(tt, ps, Z, cmap=cmap, shading="nearest", vmin=vmin, vmax=vmax, rasterized=True)
+            ax.contour(tt_S, ps_S, S_grid, levels=S_LEVELS, colors="black", linestyles=S_STYLES, linewidths=0.8)
             cbar = fig.colorbar(mesh, ax=ax, label=label, pad=0.01)
             simple_ticks(cbar.ax)
             ax.plot(ts.t_mu.where(np.isfinite(ts.t_mu)), ts.p, "w-", lw=1.3, label=r"$t^*_{\mu,\mathrm{rel}}$")
@@ -112,7 +116,10 @@ with plt.rc_context(STYLE):
         model_label(axs[row, 0], FAM_MODEL[fam], CYL)
     for ax in axs[-1]:
         ax.set_xlabel(r"$t$")
-    fig.legend(*axs[0, 0].get_legend_handles_labels(), loc="outside lower center", ncols=3, facecolor="0.85")
+    handles, labels = axs[0, 0].get_legend_handles_labels()
+    handles += [plt.Line2D([], [], color="black", lw=0.8), plt.Line2D([], [], color="black", lw=0.8, ls="--")]
+    labels += [rf"$S = {S_HARD:.2f}$ (MPS-hard)", r"$S = 1,\ 3$"]
+    fig.legend(handles, labels, loc="outside lower center", ncols=5, facecolor="0.85")
     save(fig, "heatmaps")
 
 # %% mu(t) from ED above the RBM infidelity at the same representative p; alpha = 2 dashed where run
@@ -220,8 +227,8 @@ with plt.rc_context(STYLE):
     fig, axs = plt.subplots(2, 2, figsize=(7.0, 5.2), sharey=True, layout="constrained")
     for row, fam in enumerate(["B", "A"]):
         rb = long[(long.fam == fam) & long.inf_a1.notna() & (long.t > 0)]
-        for col, (x, c, xl, cl, cmap) in enumerate([("mu", "S", r"$\mu$", r"$S_\mathrm{half}$", "cividis"),
-                                                    ("S", "mu", r"$S_\mathrm{half}$", r"$\mu$", "viridis")]):
+        for col, (x, c, xl, cl, cmap) in enumerate([("mu", "S", r"$\mu$", r"$S$ [nats]", "cividis"),
+                                                    ("S", "mu", r"$S$ [nats]", r"$\mu$", "viridis")]):
             ax = axs[row, col]
             sc = ax.scatter(rb[x], rb.log_inf, c=rb[c], s=3, cmap=cmap, rasterized=True)
             cbar = fig.colorbar(sc, ax=ax, label=cl)
