@@ -15,7 +15,12 @@ STYLE = {
     "axes.formatter.use_mathtext": True,  # cmr10 has no unicode minus
     "font.size": 9,
     "axes.titlesize": 9,
+    "axes.labelsize": 10.5,               # axis labels larger than tick labels (single-column figures, 3.4 in wide)
+    "xtick.labelsize": 8,
+    "ytick.labelsize": 8,
     "legend.fontsize": 7.5,
+    "xtick.direction": "in", "ytick.direction": "in",  # ticks point into the axes, also on the top/right edges
+    "xtick.top": True, "ytick.right": True,
 }
 # black, red, blue, then the remaining Wong colors (Makie.wong_colors()[4:end])
 COLORS = ["black", "red", "blue", "#CC79A7", "#56B4E9", "#D55E00", "#F0E442"]
@@ -53,10 +58,24 @@ panel = lambda i: rf"$\mathrm{{({'abcdefghijklmnopqrstuvwxyz'[i]})}}$"
 RIM = [patheffects.Stroke(linewidth=w, foreground="black", alpha=0.25) for w in (3.2, 2.4, 1.6)] + [patheffects.Normal()]
 
 
+def top_cbar(fig, mesh, ax, label, ticks=None):
+    """Horizontal colorbar above `ax` (saves width); `ticks` optionally fixes the tick positions."""
+    cbar = fig.colorbar(mesh, ax=ax, orientation="horizontal", location="top", pad=0.03, aspect=14, label=label)
+    simple_ticks(cbar.ax, x=ticks)
+    return cbar
+
+
+def panel_label(ax, i, on_image=True):
+    """(a), (b), ... inside the axes (top left); needed when a colorbar sits above and the title slot is taken."""
+    kw = dict(color="white", path_effects=RIM) if on_image else dict(color="black")
+    ax.text(0.04, 0.96, panel(i), transform=ax.transAxes, ha="left", va="top", zorder=7, **kw)
+
+
 def model_label(ax, text, lat=None):
     """Model description (upper right) and lattice sketch (lower right) drawn into a heatmap, white with a black rim."""
-    ax.text(0.97, 0.96, text, transform=ax.transAxes, ha="right", va="top", color="white", fontsize=7,
-            linespacing=1.3, path_effects=RIM, zorder=6)
+    if text:
+        ax.text(0.97, 0.96, text, transform=ax.transAxes, ha="right", va="top", color="white", fontsize=7,
+                linespacing=1.3, path_effects=RIM, zorder=6)
     if lat is None:
         return
     ins = ax.inset_axes([0.66, 0.04, 0.31, 0.36], zorder=6)
