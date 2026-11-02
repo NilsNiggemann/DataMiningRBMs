@@ -9,11 +9,15 @@ Python counterpart of the `julia-plotting` skill; keep figures from both languag
 
 - **Stack**: `matplotlib.pyplot`, `numpy`, `pandas`. No seaborn/plotly unless asked.
 - **Theme and ticks**: paste the preamble below at the top of the script (move it into a shared module once a second script needs it). Wrap each figure in `with plt.rc_context(STYLE):` (the analog of `with_theme`), create it with `layout="constrained"`, and call `simple_ticks(ax)` on every axis. Use `pi_ticks(ax.xaxis)` instead when the axis is an angle or momentum, where multiples of π are the natural ticks.
+- **Minor ticks**: always on, for both axes and colorbars (`xtick.minor.visible`/`ytick.minor.visible` in `STYLE`, so no per-axis call is needed). On log axes the default log minor ticks apply; never switch them off.
+- **Ticks on heatmaps**: ticks point inward, so they lie on the image. Where the colormap is black or nearly black at the edges (viridis/inferno/magma/cividis low end), black ticks vanish: call `image_ticks(ax)` to draw ticks (major and minor) in white. If the edges are light (e.g. the yellow end of viridis, `bwr` near zero), use `image_ticks(ax, color="black")`; check the rendered figure per panel. Tick *labels* stay black, they sit outside the image.
 - **Ticks are never overridden by hand**: no `set_xticklabels`, no `(positions, labels)` with hand-formatted strings, no leaving matplotlib's default `ScalarFormatter` (it gives `0.0, 0.5, 1.0` and offset/`1e3` labels; log axes give `10^1`). For explicit positions use `simple_ticks(ax, x=[12, 18, 24, 36])`. Colorbars too: `simple_ticks(cbar.ax)`. Only categorical axes may set string labels.
 - **Colors**: in line and scatter plots the first, most important series is black, the second red, the third blue. For further series use the colorblind-friendly Wong colors, i.e. `COLORS` from the preamble. Grouped categories follow the same order.
 - **Labels**: always LaTeX math via raw strings, e.g. `r"$\varphi$"`. The style sets Computer Modern for both text and math, so plain text (`"Text"`) already matches; no `text.usetex` needed.
 - **Titles**: skip any title that only repeats the axis labels.
 - **Heatmaps**: use `pcolormesh` (or `imshow` on a regular grid) and always add `fig.colorbar(..., label=...)`. Use `cmap="viridis"` by default and `cmap="bwr"` for data symmetric around zero, in which case also set symmetric `vmin=-m, vmax=m`.
+- **Colorbars above the axes**: place heatmap colorbars horizontally on top to save width: `fig.colorbar(mesh, ax=axs[:, col], orientation="horizontal", location="top", pad=0.03, aspect=14, label=...)` (one per column when panels share the scale), then `simple_ticks(cbar.ax)`. The title slot is then taken, so put the panel label inside the axes: `ax.text(0.04, 0.96, r"$\mathrm{(a)}$", transform=ax.transAxes, ha="left", va="top", color="white")` with the halo below (black text on white-background scatter plots).
+- **Paper figures**: default to single-column width, `figsize=(3.4, h)`, with large axis labels and 7–8 pt legends; stack panels or use at most 3 narrow columns. Keep long descriptions (Hamiltonians etc.) in the caption, not in the axes.
 - **Text on heatmaps**: annotations drawn on top of a colormap are white with a soft dark halo, so they read on any color. Matplotlib has no blur, so stack faint strokes from wide to narrow: `path_effects=[patheffects.Stroke(linewidth=w, foreground="black", alpha=0.25) for w in (3.2, 2.4, 1.6)] + [patheffects.Normal()]` (`from matplotlib import patheffects`). Never a single hard opaque `withStroke`. It reads as a heavy outline.
 - **Legends**: never `ax.legend()` with the default `loc="best"` (floats wherever there is space). Use an explicit `loc="center right"` etc., or give the legend its own space outside: `fig.legend(*ax.get_legend_handles_labels(), loc="outside right center")`.
 - **Categories**: a small fixed set of discrete categories (e.g. a few system sizes) gets one fixed color each from `COLORS`, not slices of a continuous colormap.
@@ -38,6 +42,12 @@ STYLE = {
     "font.serif": ["cmr10"],             # LaTeX look without a TeX install
     "mathtext.fontset": "cm",
     "axes.formatter.use_mathtext": True,  # cmr10 has no unicode minus
+    "axes.labelsize": 10.5,               # axis labels larger than tick labels (readable in a 3.4 in column)
+    "xtick.labelsize": 8,
+    "ytick.labelsize": 8,
+    "xtick.direction": "in", "ytick.direction": "in",  # ticks point into the axes, also on top/right edges
+    "xtick.top": True, "ytick.right": True,
+    "xtick.minor.visible": True, "ytick.minor.visible": True,  # minor ticks, also on top/right edges
 }
 # black, red, blue, then the remaining Wong colors (Makie.wong_colors()[4:end])
 COLORS = ["black", "red", "blue", "#CC79A7", "#56B4E9", "#D55E00", "#F0E442"]
@@ -52,6 +62,11 @@ def simple_ticks(ax, x=None, y=None):
             axis.set_ticks(ticks)
             axis.set_minor_formatter(NullFormatter())  # log axes label minor ticks otherwise
         axis.set_major_formatter(SIMPLE)
+
+
+def image_ticks(ax, color="white"):
+    """Ticks drawn over a heatmap: white where the colormap is dark (viridis, inferno, ...), `color="black"` where it is light."""
+    ax.tick_params(which="both", color=color)
 
 
 def _pi_label(v, _):

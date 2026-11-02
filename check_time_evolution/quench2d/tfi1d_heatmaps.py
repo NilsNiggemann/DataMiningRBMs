@@ -5,7 +5,7 @@ from scipy.ndimage import gaussian_filter
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
-from plotstyle import STYLE, simple_ticks, top_cbar, panel_label
+from plotstyle import STYLE, image_ticks, simple_ticks, top_cbar, panel_label
 
 D = "../../data/cumulants_Fermi_dirac_TDVP"
 run, ce, ee = (np.load(f"{D}/{f}") for f in ("rbm_tdvp_quench.npz", "ED_CE/rbm_tdvp_quench.npz", "ED_CE/ee_rbm_tdvp_quench.npz"))
@@ -28,5 +28,6 @@ with plt.rc_context(STYLE):
     for i, a in enumerate(axs):
         panel_label(a, i + 3)
         simple_ticks(a, x=[0, 0.5, 1])
+        image_ticks(a)
     fig.legend(*axs[1].get_legend_handles_labels(), loc="outside lower center", ncols=1, fontsize=7, facecolor="0.85")
     fig.savefig("figs/tfi1d_heatmaps.pdf"); fig.savefig("figs/tfi1d_heatmaps.png", dpi=110)

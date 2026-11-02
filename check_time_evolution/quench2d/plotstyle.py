@@ -21,6 +21,7 @@ STYLE = {
     "legend.fontsize": 7.5,
     "xtick.direction": "in", "ytick.direction": "in",  # ticks point into the axes, also on the top/right edges
     "xtick.top": True, "ytick.right": True,
+    "xtick.minor.visible": True, "ytick.minor.visible": True,  # minor ticks (also on top/right edges)
 }
 # black, red, blue, then the remaining Wong colors (Makie.wong_colors()[4:end])
 COLORS = ["black", "red", "blue", "#CC79A7", "#56B4E9", "#D55E00", "#F0E442"]
@@ -35,6 +36,11 @@ def simple_ticks(ax, x=None, y=None):
             axis.set_ticks(ticks)
             axis.set_minor_formatter(NullFormatter())  # log axes label minor ticks otherwise
         axis.set_major_formatter(SIMPLE)
+
+
+def image_ticks(ax, color="white"):
+    """Ticks drawn over a heatmap: white where the colormap is dark (viridis, inferno, ...), `color="black"` where it is light."""
+    ax.tick_params(which="both", color=color)
 
 
 def _pi_label(v, _):

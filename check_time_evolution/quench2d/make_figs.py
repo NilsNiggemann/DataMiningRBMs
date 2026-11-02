@@ -10,7 +10,7 @@ import pandas as pd
 from scipy.ndimage import gaussian_filter
 from matplotlib.colors import LogNorm
 from matplotlib.ticker import FuncFormatter
-from plotstyle import COLORS, STYLE, model_label, panel, panel_label, simple_ticks, top_cbar
+from plotstyle import COLORS, STYLE, image_ticks, model_label, panel, panel_label, simple_ticks, top_cbar
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "rydberg"))  # rydberg2d.py
 from rydberg2d import lattice
 
@@ -98,6 +98,7 @@ with plt.rc_context(STYLE):
             ax.set_xlim(0, T_MAX)
             panel_label(ax, 3 * row + col)
             simple_ticks(ax, x=[0, 0.5, 1])
+            image_ticks(ax)
         axs[row, 0].set_ylabel(FAM_LABEL[fam])
         model_label(axs[row, 0], "", CYL)
     for ax in axs[-1]:
@@ -154,6 +155,7 @@ with plt.rc_context(STYLE):
         ax.set_ylabel(r"$h_f$")
         panel_label(ax, i)
         simple_ticks(ax)
+        image_ticks(ax)
         ax.set_yticks(np.arange(len(g.index)), [f"${h:g}$" for h in g.index])  # categorical h_f rows
     axs[-1].set_xlabel(r"$J_{xx}$")
     model_label(axs[1], "", CYL)  # panel (b) is nearly uniform
