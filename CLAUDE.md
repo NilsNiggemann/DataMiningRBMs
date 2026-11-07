@@ -21,3 +21,24 @@
   whether that assumption is actually correct; do not silently agree with and
   build on a wrong premise. This applies to any factual claim, not just ones
   that affect code.
+## Clusters
+
+GPU jobs → Leonardo (`leonardo` skill).
+
+- No git checkout on Leonardo: code is staged by `rsync` to
+  `/leonardo_work/ICT26_CMSP_0/nniggema/vitq/` and results are fetched back with `rsync`.
+- Venv: `~/Projects/SuperfluidMottTriangular/.venv` on Leonardo (netket 3.22.4, jax 0.10.2 + CUDA).
+- sbatch scripts in `check_time_evolution/vit/` (template `leonardo_ptvmc_scan.sbatch`),
+  account `ICT25_CMSP_0`.
+
+## Figures (on top of the global `python-plotting` skill)
+
+- Single-column width by default; stack panels or use at most 3 narrow columns. Long
+  descriptions (Hamiltonians etc.) go in the caption.
+- Tick labels 8 pt (`plt.rcParams.update({"xtick.labelsize": 8, "ytick.labelsize": 8})`).
+- Heatmap colorbars horizontal on top, one per column when panels share the scale:
+  `fig.colorbar(mesh, ax=axs[:, col], orientation="horizontal", location="top", pad=0.03, aspect=14, label=...)`.
+- Heatmap ticks: white where the colormap edge is dark, black where light
+  (`ax.tick_params(which="both", color=...)`); tick labels stay black.
+- Text on heatmaps: white with a soft dark halo, stacked faint strokes:
+  `[patheffects.Stroke(linewidth=w, foreground="black", alpha=0.25) for w in (3.2, 2.4, 1.6)] + [patheffects.Normal()]`.
