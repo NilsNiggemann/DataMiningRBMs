@@ -32,3 +32,38 @@
 | m4 | Canonical-form statement covers (c,d) wrongly | The caption separates (a,b) canonical from (c,d) full range. |
 | m5 | Imprecise "U(t) within 0.4"; t*_prox for λ=1 | Fixed. |
 | m6 | η range includes the untested λ=0.1 | "0.052–0.070 in the tested bases". |
+
+# Review log: beyond2body_report.tex (2026-10-30)
+
+## Round 1 (independent reviewer, verdict REVISE, 11 major / 17 minor)
+
+| # | finding | response |
+|---|---------|----------|
+| M1 | toric-code window "16–25% at 12 and 18 spins" false at 12 spins | Fixed: "16–24% at 18 spins (5–23% at 12)", box says t ≲ 2.5. |
+| M2 | h_f = 0 toric-code quench (window 100%) silently dropped; "largest windows of the screen" false | Fixed: new paragraph "The quench to the pure toric code" (commuting stabilisers, not counted); Fig. 1 caption says g = 0 points are not on the log axis; "largest windows" removed. |
+| M3 | "all gs starts hard within 0.6" contradicted (NM gs windows, h = 0 w-windows) | Fixed: claims restricted to the \|+x⟩ starts; gs starts listed separately incl. NM μ-windows and the ~60% w-windows of the quenches to the classical point. |
+| M4 | window = time after first S crossing, but S oscillates (B4 h=0.05: hard at 19% of saves) | **Fixed in the analysis.** Window redefined as the fraction of save times that are MPS-hard and before the onset (`b2b_summary.py`); Fig. 1 and all numbers recomputed. Headlines changed: Baxter–Wu 98% → 19%, Newman–Moore 47% → 31% at h = 0.05; toric code unchanged (always MPS-hard). Highlight order changed: toric code first. Listed under deviations. |
+| M5 | R2 has no threshold yet "calls hard" | Fixed: title "μ says easy, w_hi says hard, R2 is large"; text says R2 is large for every h and does not separate; "between 4.9 and 6" throughout. |
+| M6 | "therefore upper bounds" rests on one family | Fixed: conditional and marked untested; the early onsets in the TFI quench are mentioned. |
+| M7 | "easy at h ≤ 0.2, hard at h ≥ 0.3" not a split | Fixed: windows listed per h, "shrink steadily, no sharp boundary"; weak-field cut h ≤ 0.1 used consistently. |
+| M8 | e^S ≈ 18–42 wrong | Fixed: e^S ≈ 6–18. |
+| M9 | box overstates exact-RBM claim | Fixed: "close to one with an exact RBM", interpretation flagged as untested. |
+| M10 | μ under-defined | Fixed: definition box with the fit form, natural log, noise cut ln\|c\| < −28, meaning of μ = −10. |
+| M11 | B4 gs cause stated as fact | Fixed: three possible causes, "not tested"; Fig. 2 caption marks h = 1 as assumed self-dual. |
+| m1 | "μ tracks best" vs ties in G4 | Fixed: "as well as or better". |
+| m2 | reversed order of windows | Fixed. |
+| m3 | t_w at first save time | Fixed: "(at h ≤ 0.1 the first or second save time, so an upper bound)". |
+| m4 | h_f for NM | Fixed: h. |
+| m5 | R4(0)=0 claim fails for B2 | Fixed: restricted to quenches changing only the X field; B2 values 0.002–0.03 quoted. |
+| m6 | χ used twice | Fixed: cluster function renamed s_A; the Fig. 2 caption describes the grey squares in words. |
+| m7 | "12 values each" vs references | Fixed. |
+| m8 | Trebst citation for a negative claim; "breaks symmetry" | Fixed as suggested. |
+| m9 | mechanisms stated as fact | Fixed: "We attribute…", "presumably". |
+| m10 | internal names | Fixed: subtitle, "previous report on two-spin quenches", "TDVP on exact sums", D3/I1 described, lattice insets now "triangular 6×3" etc. Family codes B1–B7 kept only next to descriptive names. |
+| m11 | "cheap" vs "if affordable" | Fixed. |
+| m12 | Fig. 2 too small; toric-code lattice missing | Fixed: landscape page (sidewaysfigure); caption says the toric-code sketch is omitted. |
+| m13 | Fig. 1 caption incomplete | Fixed: full toric-code H; omitted families listed. |
+| m14 | S is not an RBM predictor | Fixed. |
+| m15 | "at every field" | Removed. |
+| m16 | window undefined without t_S | Fixed: 0 if never MPS-hard (also by the new definition). |
+| m17 | 44 processes exceed the 30-CPU limit | Rebutted: for this run the user explicitly allowed up to 50 CPUs and 120 GB; peak memory of the run was ~86 GB (checked during the run). |
