@@ -1,7 +1,9 @@
 """Stage 1 ED screen of PLAN_rydberg_quench.md: family catalogue + parallel runner.
 
-usage: python rydberg_screen.py run [TIER ...]      -> data/screen/raw/<ID>_<lat>_<init>_<k>.npz (resumable)
-       python rydberg_screen.py gather               -> data/screen/<ID>_<lat>_<init>.npz
+usage: python rydberg_screen.py run [TIER ...]      -> $SCREEN/raw/<ID>_<lat>_<init>_<k>.npz (resumable)
+       python rydberg_screen.py gather               -> $SCREEN/<ID>_<lat>_<init>.npz
+       SCREEN defaults to data/screen; tier 4 (beyond-two-body, plan_beyond2body.md) uses SCREEN=data/b2b and
+       also reruns the reference rows REFS there
        python rydberg_screen.py dtcheck              -> dt/2 reruns at 3 g values per Tier-1 family (raw/dthalf_*)
 """
 import os, sys, glob, time
@@ -12,11 +14,16 @@ from rydberg2d import *
 from rydberg2d import _lat
 
 PI = np.pi
-RAW = "data/screen/raw"
+SCREEN = os.environ.get("SCREEN", "data/screen")
+RAW = f"{SCREEN}/raw"
 lin = lambda a, b, n: list(np.round(np.linspace(a, b, n), 4))
 tmax_field = lambda h: min(300.0, max(10.0, 3 / h)) if h > 0 else 300.0
+HTC = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.33, 0.4, 0.5, 0.66, 1.0]
+HLAB = {"+x": r"$h$", "gs": r"$h_f$"}
+HGRID = {"+x": [0.05, 0.1, 0.2, 0.3, 0.5, 0.7, 0.85, 1.0, 1.2, 1.5, 2.0, 3.0],
+         "gs": [0, 0.1, 0.3, 0.5, 0.7, 0.85, 1.0, 1.15, 1.3, 1.5, 2.0, 3.0]}
 
-# ID: tier, g label, g grid, lattices, inits, experimental marks {value: label}
+# ID: tier, g label, g grid, lattices, inits, experimental marks {value: label}; label and grid can be {init: ...}
 FAMILIES = {
     # ---- Tier 1
     "S3":  (1, r"$h$", lin(0, PI / 4, 14), ["chain12", "chain16", "sq4x3"], ["+x", "th", "g~"], {}),
@@ -65,7 +72,17 @@ FAMILIES = {
     "S6":  (3, r"$\Omega$", lin(0, 0.5, 6), ["sq4x3"], ["th"], {}),
     "S7":  (3, r"$\Delta_{zz}$", lin(0, 1, 6), ["chain12"], ["Z2th"], {}),
     "C3":  (3, r"$s$", lin(-1, 1, 6), ["chain12"], ["th"], {}),
+    # ---- Tier 4 (beyond two-body, plan_beyond2body.md)
+    "B1":  (4, r"$h_f$", HTC, ["tc12", "tc18"], ["gs"], {0.33: r"$h_c$ (dual TFI)"}),
+    "B2":  (4, r"$h_f$", HTC, ["tc12", "tc18"], ["gs"], {}),
+    "B3":  (4, HLAB, HGRID, ["sq4x4"], ["+x", "gs"], {1.0: "self-dual"}),
+    "B4":  (4, HLAB, HGRID, ["tri6x3"], ["+x", "gs"], {1.0: "self-dual"}),
+    "B5":  (4, HLAB, HGRID, ["tri4x4"], ["+x", "gs"], {1.0: "self-dual"}),
+    "B6":  (4, r"$K$", lin(0, 2, 12), ["sq4x4"], ["+x"], {0.0: "I4"}),
+    "B7":  (4, r"$\lambda$", lin(0, 2, 12), ["tri4x4"], ["+x"], {0.0: "I5"}),
 }
+REFS = [("G4", "sq4x3", "gs"), ("R1", "sq4x3", "+x"), ("S1", "tc12", "th"), ("I5", "tri4x3", "+x")]  # rerun with tier 4
+pick = lambda x, init: x[init] if isinstance(x, dict) else x
 THETA = {"th": PI / 4, "Z2th": PI / 4, "g~": 0.1, "seed": 0.2}
 THETA_SMALL = {"R4": 0.2, "R5": 0.2, "C2": 0.2, "I3": 0.1}  # near-|g> starts (Rydberg-native, tilted off the zeros)
 
@@ -95,7 +112,7 @@ def spec(ID, latname, init, g):
     th = THETA_SMALL.get(ID, THETA.get(init))
     psi0 = None if init == "gs" else initial_state(lat, "th" if init == "g~" else init, th if init != "th" or ID != "R0" else g)
     T201 = lambda tm: np.linspace(0, tm, 201)
-    per, unit = None, r"$V_{nn}$"
+    per, unit, gap = None, r"$V_{nn}$", np.nan
     if ID == "R0":
         segs, ts = [(1, rydberg_terms(lat, 0, 0, vdw))], T201(100)
     elif ID in ("R1", "R2", "R8"):
@@ -200,15 +217,32 @@ def spec(ID, latname, init, g):
         segs, ts, unit = [(1, dipolar_xy(lat, J) + pair_terms(lat, lambda i, j: g * J[i, j] / 2))], T201(10), r"$J_{nn}$"
     elif ID == "G4":
         Hf = lambda h: pair_terms(lat, lambda i, j: -vdw[i, j]) + field_terms(N, -h, "X")
-        psi0 = ground_state(Hf(4.0), N)
+        psi0, gap = ground_state(Hf(4.0), N, return_gap=True)
         segs, ts, unit = [(1, Hf(g))], T201(10), r"$J_{nn}$"
     elif ID == "Q1":
         U = pairs(lat, lambda r, d: 2.0 if r < 1.5 else 0.0)  # unit-disk (King's graph on the square lattice), MIS penalty 2
         segs = [(1, rydberg_terms(lat, 0, 1.0, U)), (1, field_terms(N, g, "X"))]  # gamma = 1 phase layer, beta = g mixer
         per, ts, unit = 2.0, np.arange(0, 17, 2.0), "layer/2"
+    elif ID in ("B1", "B2"):
+        tc = [(-1.0, P(N, {q: "X" for q in s})) for s in lat["stars"]] + [(-1.0, P(N, {q: "Z" for q in p})) for p in lat["plaq"]]
+        ops = ["Z"] if ID == "B1" else ["Z", "X"]
+        Hf = lambda h: tc + sum((field_terms(N, -h / np.sqrt(len(ops)), o) for o in ops), [])
+        psi0, gap = ground_state(Hf(0.1), N, return_gap=True)
+        segs, ts, unit = [(1, Hf(g))], T201(10), "1"
+    elif ID in ("B3", "B4", "B5"):
+        faces = {"B3": squares, "B4": triangles, "B5": up_triangles}[ID](lat)
+        Hf = lambda h: [(-1.0, P(N, {q: "Z" for q in f})) for f in faces] + field_terms(N, -h, "X")
+        if init == "gs":
+            psi0, gap = ground_state(Hf(1.5), N, return_gap=True)
+        segs, ts, unit = [(1, Hf(g))], T201(10 if init == "gs" else tmax_field(g)), "1"
+    elif ID in ("B6", "B7"):
+        many = ([(-g, P(N, {q: "Z" for q in f})) for f in squares(lat)] if ID == "B6"
+                else [(-1.0, P(N, {q: "Z" for q in f})) for f in triangles(lat)])
+        segs = [(1, many + pair_terms(lat, lambda i, j: -(1.0 if ID == "B6" else g) * nnJ(i, j)) + field_terms(N, -0.5, "X"))]
+        ts, unit = T201(20), "1"
     else:
         raise ValueError(ID)
-    return dict(segs=segs, psi0=psi0, t_save=np.asarray(ts, float), period=per, N=N, unit=unit, lat=lat)
+    return dict(segs=segs, psi0=psi0, t_save=np.asarray(ts, float), period=per, N=N, unit=unit, lat=lat, gap=gap)
 
 
 # ----------------------------------------------------------------------------- runner
@@ -224,13 +258,25 @@ def run_task(task):
     rowsum = max(np.abs(o).sum(1).max() if o.nnz else 0.0 for _, _, o in parts)
     dts = np.diff(s["t_save"]).min()
     dt_max = dt_scale * (min(dts, 0.1 / rowsum) if rowsum > 0 else dts)
+    if s["gap"] < 1e-4:
+        print(f"WARNING {out}: gap of H_0 = {s['gap']:.1e}, eigsh may return a mixture", flush=True)
     t, ev, _ = evolve(s["psi0"], parts, s["t_save"], dt_max, period=s["period"])
     A = analyze(t, ev, N)
+    if s["period"] is None and FAMILIES[ID][0] == 4 or (ID, latname, init) in REFS:  # few-body rates R_2, R_4
+        _, dg, o = parts[0]
+        order = order_of_masks(N)
+        rates = []
+        for la, ph in zip(ev["logabs"], ev["ph"]):
+            p = np.exp(la + 1j * ph)
+            ab = np.abs(p) ** 2
+            rates.append([x for k in (2, 4) for x in few_body_rate(p, o @ p + dg * p, N, k, order, rank=True)]
+                         + [np.sum(ab > 1e-12 * ab.max())])
+        A["rate2"], A["rank2"], A["rate4"], A["rank4"], A["supp"] = np.array(rates).T  # supp: #configs with p > 1e-12 max p
     dav = sum(d * dg for d, dg, _ in parts) / T
     oav = sum(d * o for d, _, o in parts) / T
     ncut = sum(1 for i, j in s["lat"]["nn"] if (i < N // 2) != (j < N // 2))
     np.savez(out, t=t, g=g, eta=eta(dav, sp.csr_matrix(oav)), N=N, ncut=ncut, dt_max=dt_max, unit=s["unit"],
-             walltime=time.time() - t0, **A)
+             gap=s["gap"], walltime=time.time() - t0, **A)
     return out, time.time() - t0
 
 
@@ -238,8 +284,10 @@ def tasks(tiers, dt_scale=1.0, tag=""):
     out = []
     for ID, (tier, _, grid, lats, inits, _) in FAMILIES.items():
         if tier in tiers:
-            out += [(ID, l, i, k, g, dt_scale, tag) for l in lats for i in inits for k, g in enumerate(grid)]
-    big = lambda t: ("16" in t[1] or t[1] == "sq4x4") and t[0] != "D6"
+            out += [(ID, l, i, k, g, dt_scale, tag) for l in lats for i in inits for k, g in enumerate(pick(grid, i))]
+    if 4 in tiers:
+        out += [(ID, l, i, k, g, dt_scale, tag) for ID, l, i in REFS for k, g in enumerate(FAMILIES[ID][2])]
+    big = lambda t: ("16" in t[1] or "18" in t[1] or t[1] in ("sq4x4", "tri6x3")) and t[0] != "D6"
     return sorted(out, key=lambda t: (FAMILIES[t[0]][0], not big(t)))  # tier order, 16-site jobs first
 
 
@@ -263,7 +311,7 @@ def gather():
         cap = np.round(stack["chi"] / np.where(stack["chi_frac"] > 0, stack["chi_frac"], np.nan))
         stack["chi_frac"] = (stack["chi"] - 1) / (cap - 1)  # 0 for a product state, 1 at the cap (raw files store chi/cap)
         tier, glabel, _, _, _, marks = FAMILIES[ID]
-        np.savez(f"data/screen/{key}.npz", tier=tier, glabel=glabel, marks_g=list(marks), marks_l=list(marks.values()),
+        np.savez(f"{SCREEN}/{key}.npz", tier=tier, glabel=pick(glabel, key.split("_")[-1]), marks_g=list(marks), marks_l=list(marks.values()),
                  t=ds[int(np.argmax([len(d["t"]) for d in ds]))]["t"], t_g=stack.pop("t"), **stack)  # t_g: per-g times (t_max can depend on g)
     print(f"gathered {len(groups)} combinations")
 

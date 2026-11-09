@@ -40,14 +40,16 @@ def lattice(name):
         return _lat([(i, 0) for i in range(N)], [(N, 0)] if name[0] == "r" else [])
     if name in ("sq4x3", "sq4x4"):
         Lx, Ly = 4, int(name[-1])
-        return _lat([(x, y) for x in range(Lx) for y in range(Ly)], [(Lx, 0)] + ([(0, Ly)] if Ly == 4 else []),
-                    sub=[(-1) ** (x + y) for x in range(Lx) for y in range(Ly)])
-    if name in ("tri4x3", "tri4x4"):
-        Lx, Ly = 4, int(name[-1])
+        lat = _lat([(x, y) for x in range(Lx) for y in range(Ly)], [(Lx, 0)] + ([(0, Ly)] if Ly == 4 else []),
+                   sub=[(-1) ** (x + y) for x in range(Lx) for y in range(Ly)])
+        return dict(lat, Lx=Lx, Ly=Ly)
+    if name in ("tri4x3", "tri4x4", "tri6x3"):
+        Lx, Ly = int(name[3]), int(name[-1])
         a1, a2 = np.array([1, 0]), np.array([0.5, S3_ / 2])
-        return _lat([x * a1 + y * a2 for x in range(Lx) for y in range(Ly)], [Lx * a1, Ly * a2],
-                    sub=[(-1) ** (x + y) for x in range(Lx) for y in range(Ly)],
-                    sub3=[(x + 2 * y) % 3 for x in range(Lx) for y in range(Ly)])
+        lat = _lat([x * a1 + y * a2 for x in range(Lx) for y in range(Ly)], [Lx * a1, Ly * a2],
+                   sub=[(-1) ** (x + y) for x in range(Lx) for y in range(Ly)],
+                   sub3=[(x + 2 * y) % 3 for x in range(Lx) for y in range(Ly)])
+        return dict(lat, Lx=Lx, Ly=Ly)
     if name == "kag12":
         a1, a2 = np.array([2, 0]), np.array([1, S3_])
         b = [np.array([0, 0]), np.array([1, 0]), np.array([0.5, S3_ / 2])]
@@ -63,20 +65,40 @@ def lattice(name):
                [(2, 0), (3, 0), (2.5, S3_ / 2)], [(3, 0), (4, 0), (3.5, -S3_ / 2)]]
         mids = [(np.add(t[a], t[b]) / 2) for t in tri for a, b in [(0, 1), (1, 2), (0, 2)]]
         return _lat(mids, [])
-    if name == "tc12":
-        # toric code on a 2x3 torus: qubits on the 12 links; positions = link midpoints
-        Lx, Ly = 2, 3
-        pos = [(x + 0.5, y) for x in range(Lx) for y in range(Ly)] + [(x, y + 0.5) for x in range(Lx) for y in range(Ly)]
+    if name.startswith("tc"):
+        # toric code on an Lx x Ly torus (tc12 = tc2x3, tc18 = tc3x3): qubits on the links, positions = link midpoints.
+        # Sites are ordered column by column (v links at x, then h links at x + 1/2), so the N/2 cut is spatial.
+        Lx, Ly = {"tc12": (2, 3), "tc18": (3, 3)}.get(name) or map(int, name[2:].split("x"))
+        pos = [p for x in range(Lx) for p in [(x, y + 0.5) for y in range(Ly)] + [(x + 0.5, y) for y in range(Ly)]]
         lat = _lat(pos, [(Lx, 0), (0, Ly)])
-        h = lambda x, y: (x % Lx) * Ly + (y % Ly)
-        v = lambda x, y: Lx * Ly + (x % Lx) * Ly + (y % Ly)
+        h = lambda x, y: (x % Lx) * 2 * Ly + Ly + (y % Ly)
+        v = lambda x, y: (x % Lx) * 2 * Ly + (y % Ly)
         lat["stars"] = [[h(x, y), h(x - 1, y), v(x, y), v(x, y - 1)] for x in range(Lx) for y in range(Ly)]
         lat["plaq"] = [[h(x, y), h(x, y + 1), v(x, y), v(x + 1, y)] for x in range(Lx) for y in range(Ly)]
         return lat
     raise ValueError(name)
 
 
+def up_triangles(lat, down=False):
+    """Up-triangles (x,y), (x+1,y), (x,y+1) of a periodic tri lattice (Newman-Moore); down=True: the down-triangles."""
+    Lx, Ly = lat["Lx"], lat["Ly"]
+    idx = lambda x, y: (x % Lx) * Ly + (y % Ly)
+    if down:
+        return [(idx(x + 1, y), idx(x, y + 1), idx(x + 1, y + 1)) for x in range(Lx) for y in range(Ly)]
+    return [(idx(x, y), idx(x + 1, y), idx(x, y + 1)) for x in range(Lx) for y in range(Ly)]
+
+
+def squares(lat):
+    """Square plaquettes of a periodic sq lattice (Xu-Moore)."""
+    Lx, Ly = lat["Lx"], lat["Ly"]
+    idx = lambda x, y: (x % Lx) * Ly + (y % Ly)
+    return [(idx(x, y), idx(x + 1, y), idx(x, y + 1), idx(x + 1, y + 1)) for x in range(Lx) for y in range(Ly)]
+
+
 def triangles(lat):
+    """Elementary triangles. On tri lattices the faces (a Ly = 3 torus also has nn 3-cycles winding around it)."""
+    if lat.get("sub3") is not None and "Lx" in lat:
+        return sorted(tuple(sorted(t)) for t in up_triangles(lat) + up_triangles(lat, down=True))
     nn = set(lat["nn"])
     N = lat["N"]
     return [(i, j, k) for i in range(N) for j in range(i + 1, N) for k in range(j + 1, N)
@@ -185,11 +207,13 @@ def initial_state(lat, init, theta=np.pi / 4):
     raise ValueError(init)
 
 
-def ground_state(terms, N):
+def ground_state(terms, N, return_gap=False):
     d, o = sparse_parts(terms, N)
     H = o + sp.diags(d)
-    v = eigsh(H, k=1, which="SA")[1][:, 0] if 2 ** N > 64 else np.linalg.eigh(H.toarray())[1][:, 0]
-    return v.astype(complex) / np.linalg.norm(v)
+    E, V = eigsh(H, k=2, which="SA") if 2 ** N > 64 else np.linalg.eigh(H.toarray())
+    i = np.argsort(E)
+    v = V[:, i[0]].astype(complex) / np.linalg.norm(V[:, i[0]])
+    return (v, E[i[1]] - E[i[0]]) if return_gap else v
 
 
 # ----------------------------------------------------------------------------- evolution
@@ -305,6 +329,27 @@ def analyze(times, ev, N):
     return {k: np.array(v) for k, v in out.items()}
 
 
+def few_body_rate(psi, Hpsi, N, k, order=None, rank=False):
+    """R_k = min_c ||p^(1/2) (v - f_c)||, v = -i H psi / psi, f_c = sum_{|A|<=k} c_A s_A (all clusters, complex c).
+    Normal equations in Walsh space: G_AB = sum_s p s_{A xor B}, b_A = sum_s s_A conj(psi) (-i H psi).
+    The residual is evaluated directly (no |v|^2 - b G^-1 b cancellation). rank=True also returns rank(G): if it equals
+    the support size of p, the fit is exact for any v (e.g. a state confined to a small symmetry sector)."""
+    from scipy.linalg import lstsq
+    n = 2 ** N
+    order = order_of_masks(N) if order is None else order
+    idx = np.where(order <= k)[0].astype(np.int32)
+    p = np.abs(psi) ** 2
+    G = n * fwht(p)[idx[:, None] ^ idx[None, :]]
+    w = -1j * np.conj(psi) * Hpsi
+    b = n * np.stack([fwht(w.real)[idx], fwht(w.imag)[idx]], 1)
+    c, _, rk, _ = lstsq(G, b, cond=1e-12, lapack_driver="gelsy")
+    full = np.zeros((2, n)); full[:, idx] = c.T
+    f = n * fwht(full)  # f_c(s) = sum_A c_A s_A
+    r = -1j * Hpsi * np.exp(-1j * np.angle(psi)) - np.abs(psi) * (f[0] + 1j * f[1])
+    R = np.sqrt(np.sum(np.abs(r) ** 2))
+    return (R, rk) if rank else R
+
+
 # ----------------------------------------------------------------------------- self-checks
 if __name__ == "__main__":
     import netket as nk
@@ -356,4 +401,51 @@ if __name__ == "__main__":
     a = np.abs(psi) ** 2
     supp = a > 1e-10
     assert np.allclose(a[supp], a[supp].max()) and np.log2(supp.sum()) % 1 == 0, "KIM Clifford point: stabilizer"
+
+    # 6. plaquette lattices: toric code, squares, (up-)triangles
+    for name, (Lx, Ly) in [("tc12", (2, 3)), ("tc18", (3, 3))]:
+        lat = lattice(name); N = lat["N"]
+        assert all(len(set(a) & set(b)) % 2 == 0 for a in lat["stars"] for b in lat["plaq"]), "[A_s, B_p] != 0"
+        assert all(np.bincount(np.ravel(lat[q]), minlength=N).tolist() == [2] * N for q in ("stars", "plaq"))
+        tc = [(-1.0, P(N, {q: "X" for q in s})) for s in lat["stars"]] + [(-1.0, P(N, {q: "Z" for q in p})) for p in lat["plaq"]]
+        d, o = sparse_parts(tc, N)
+        assert abs(eigsh(o + sp.diags(d), k=1, which="SA")[0][0] + 2 * Lx * Ly) < 1e-8, "toric code gs energy"
+    for name in ("tri4x4", "tri6x3"):
+        lat = lattice(name); N = lat["N"]; tr = triangles(lat); up = up_triangles(lat)
+        assert len(set(tr)) == 2 * N and len(up) == N and {tuple(sorted(u)) for u in up} <= set(tr)
+        nn = set(lat["nn"]); assert all({(a, b), (a, c), (b, c)} <= nn for a, b, c in tr)
+    lat = lattice("sq4x4"); sq = squares(lat)
+    assert len(sq) == lat["N"] and all({(a, b) for a, b in lat["nn"] if a in q and b in q}.__len__() == 4 for q in sq)
+
+    # 7. few-body rate R_k
+    lat = lattice("sq4x3"); N = 12; order = order_of_masks(N)
+    V = 1 / lat["R"] ** 6
+    d0, o0 = sparse_parts(rydberg_terms(lat, 0.0, 0.0, V), N)  # diagonal 2-body: v(s) = -i E(s) at all t
+    psi = initial_state(lat, "th", 0.6)
+    t, ev, _ = evolve(psi, [(1.0, d0, o0)], np.linspace(0, 5, 3), dt_max=1.0)
+    for la, ph in zip(ev["logabs"], ev["ph"]):
+        ps = np.exp(la + 1j * ph)
+        assert few_body_rate(ps, d0 * ps, N, 2, order) < 1e-10
+    Hf = lambda h: pair_terms(lat, lambda i, j: -V[i, j]) + field_terms(N, -h, "X")  # G4: gs start, field quench
+    psi = ground_state(Hf(4.0), N)
+    d, o = sparse_parts(Hf(1.0), N)
+    assert few_body_rate(psi, o @ psi + d * psi, N, 2, order) < 1e-8, "G4 R2(0)"
+    assert few_body_rate(psi, o @ psi + d * psi, N, 1, order) > 1e-3
+    N = 8; lat = lattice("chain8"); order = order_of_masks(N)  # dense lstsq on the explicit basis
+    psi = rng.normal(size=2 ** N) + 1j * rng.normal(size=2 ** N); psi /= np.linalg.norm(psi)
+    d, o = sparse_parts(pair_terms(lat, lambda i, j: rng.normal(), ("XX", "ZZ")) + field_terms(N, 0.4, "X")
+                        + [(0.5, P(N, {0: "Z", 3: "Z", 5: "Z"}))], N)
+    Hpsi = o @ psi + d * psi
+    A = np.where(order <= 2)[0]
+    M = 1 - 2 * (np.bitwise_count(np.arange(2 ** N)[:, None] & A[None, :]) & 1)  # s_A for every (s, A)
+    sq = np.abs(psi)
+    r = -1j * Hpsi * np.exp(-1j * np.angle(psi))
+    ref = np.linalg.norm(r - sq[:, None] * M @ np.linalg.lstsq(sq[:, None] * M, r, rcond=None)[0])
+    assert abs(few_body_rate(psi, Hpsi, N, 2, order) - ref) < 1e-10 * max(1, ref), "R2 vs dense lstsq"
+    lat = lattice("sq4x4"); N = 16  # Xu-Moore field quench from gs: R2(0) > 0, R4(0) = 0
+    HD = [(-1.0, P(N, {q: "Z" for q in s})) for s in squares(lat)]
+    psi = ground_state(HD + field_terms(N, -1.5, "X"), N)
+    d, o = sparse_parts(HD + field_terms(N, -0.5, "X"), N)
+    Hpsi = o @ psi + d * psi
+    assert few_body_rate(psi, Hpsi, N, 2) > 1e-2 and few_body_rate(psi, Hpsi, N, 4) < 1e-7, "Xu-Moore R_k(0)"
     print("ok")
