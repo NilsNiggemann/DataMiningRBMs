@@ -79,7 +79,7 @@ quantities = [("log_inf", r"$\log_{10}I$", "inferno", (-6, 0)), (MU, MU_TEX, "vi
 with plt.rc_context(STYLE):
     fig, axs = plt.subplots(2, 3, figsize=(W, 3.3), sharex=True, sharey="row", layout="constrained")
     fig.get_layout_engine().set(wspace=0.01, w_pad=0.02)  # tight columns -> wider, squarer panels
-    for row, fam in enumerate(["B", "A"]):
+    for row, fam in enumerate(["A", "B"]):
         ed = long[long.fam == fam]
         ts = tstar[tstar.fam == fam]
         ps_S, tt_S, S_grid = grid(ed, "S")
@@ -212,7 +212,7 @@ with plt.rc_context(STYLE):
 # %% pointwise relation: mu against infidelity coloured by S, and S against infidelity coloured by mu
 with plt.rc_context(STYLE):
     fig, axs = plt.subplots(2, 2, figsize=(W, 4.4), sharey=True, layout="constrained")
-    for row, fam in enumerate(["B", "A"]):
+    for row, fam in enumerate(["A", "B"]):
         rb = long[(long.fam == fam) & long.inf_a1.notna() & (long.t > 0)]
         for col, (x, c, xl, cl, cmap) in enumerate([(MU, "S", MU_TEX, r"$S$ [nats]", "cividis"),
                                                     ("S", MU, r"$S$ [nats]", MU_TEX, "viridis")]):
