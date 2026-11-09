@@ -5,3 +5,7 @@
 - check real vs complex TDVP equation for non-holomorphic ansatz in nkx.TDVP — QGT imag part may be dropped
 - MPS/TEBD baseline L=10-20 — cross-check what "hard" means
 - L=16 exact-sum runs — only once L=10 works
+- lr scan / other inner optimiser settings for the ViT (no Adam) at g_f=3, t~0.6 — loss falls only ~2-3x from it 100 to 600 (SR ill-conditioned or flat landscape?)
+- larger ViT (bigger head/width, new t=0 fit) — fixed loss floor ~3e-3 at g_f=3 independent of iterations/diag_shift (002)
+- MPS/TEBD or exact-sum fit of the target at one hard step (g_f=3, t=0.6) — separates representability from optimisation
+- p-tVMC loss floor vs mu_max: does ViT accuracy track the cumulant level? RBM does (002 heatmap), ViT fails at large g_f where mu_max is small
