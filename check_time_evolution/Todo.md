@@ -1,1 +1,2 @@
 - [ ] try time evolution with transformers. Use Leonardo to be able to use GPU as a test job. see if the hard quenches stay hard.
+  - plan: plans/plan_vit_quench.md (1D TFI, local only, L<=20; steps S0-S16)
