@@ -1,0 +1,7 @@
+- wider read-out head (nhid > d) — all information currently passes through d=8 pooled units
+- per-patch / per-site read-out instead of sum-pool + logcosh — as in published ViT wave functions
+- full QKV attention instead of factored alpha_ij — more expressive
+- implicit / p-tVMC integrator instead of explicit RK4 on stiff projected ODE — NaNs at g_f>=1
+- check real vs complex TDVP equation for non-holomorphic ansatz in nkx.TDVP — QGT imag part may be dropped
+- MPS/TEBD baseline L=10-20 — cross-check what "hard" means
+- L=16 exact-sum runs — only once L=10 works

@@ -1,0 +1,158 @@
+<title>ViT quench updates</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Newsreader:opsz,wght@6..72,500;6..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single reading column, like a lab notebook; one entry per step, newest open on top. */
+:root {
+  --bg: #f6f8f9; --surface: #ffffff; --fg: #1b2530; --muted: #5b6875;
+  --line: #d9e0e6; --accent: #1f5f8b; --figbg: #ffffff;
+  --display: "Newsreader", Georgia, "Times New Roman", serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11161b; --surface: #181f26; --fg: #e3e9ee; --muted: #9aa7b3;
+  --line: #2a343d; --accent: #7db8e0; --figbg: #f4f6f8; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11161b; --surface: #181f26; --fg: #e3e9ee; --muted: #9aa7b3;
+  --line: #2a343d; --accent: #7db8e0; --figbg: #f4f6f8; color-scheme: dark }
+
+body { background: var(--bg); color: var(--fg); font: 17px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 32px 64px; }
+main { max-width: 46rem; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+header h1 { font: 600 2.1rem/1.15 var(--display); margin: 0; text-wrap: balance; }
+header p { margin: 4px 0 0; color: var(--muted); }
+.status { color: var(--muted); }
+
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+summary { cursor: pointer; padding: 14px 18px; display: flex; flex-direction: column; gap: 2px; list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.meta { font: 500 0.78rem var(--mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); }
+.meta::before { content: "▸ "; }
+details[open] .meta::before { content: "▾ "; }
+.headline { font: 600 1.3rem/1.3 var(--display); text-wrap: balance; }
+details[open] .headline { font-size: 1.55rem; }
+
+.report { padding: 0 18px 18px; min-width: 0; }
+.report > :first-child { margin-top: 0; }
+.report h2 { font: 600 1.25rem var(--display); margin: 1.6em 0 0.4em; }
+.report h3 { font: 600 1.05rem var(--display); margin: 1.3em 0 0.3em; }
+.report a { color: var(--accent); }
+.report img { display: block; max-width: 100%; margin: 0 auto; background: var(--figbg); border-radius: 4px; padding: 6px; box-sizing: border-box; }
+.report p:has(> img) { margin-bottom: 0.3em; }
+.report p:has(> img) + p > em:only-child { display: block; font-size: 0.92rem; color: var(--muted); }
+.report hr { border: 0; border-top: 1px solid var(--line); margin: 2em 0 1em; }
+.report code { font: 0.88em var(--mono); }
+.report pre, .tablewrap { overflow-x: auto; }
+.report table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.report th, .report td { border-bottom: 1px solid var(--line); padding: 4px 10px; text-align: left; }
+.report blockquote { margin: 1em 0; padding-left: 14px; border-left: 3px solid var(--line); color: var(--muted); }
+#open { border-left: 4px solid var(--accent); }
+.openbar { display: flex; gap: 10px; align-items: center; padding: 0 18px 8px; font-size: 0.85rem; color: var(--muted); }
+.openbar button { font: inherit; padding: 3px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--fg); cursor: pointer; }
+#openedit { display: block; box-sizing: border-box; width: calc(100% - 36px); margin: 0 18px 18px; min-height: 18rem; padding: 10px; font: 0.88rem/1.5 var(--mono); background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 4px; }
+.report li:has(> input[type="checkbox"]) { list-style: none; margin-left: -1.4em; }
+.report input[type="checkbox"] { margin-right: 0.4em; accent-color: var(--accent); }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; }
+</style>
+
+<main>
+  <header>
+    <h1>ViT quench</h1>
+    <p>Project updates, newest first. Click an older update to open it.</p>
+  </header>
+  <details id="open" open hidden><summary><span class="meta">Standing</span><span class="headline">Open questions and todo</span></summary></details>
+  <p class="status" id="status">Loading updates…</p>
+  <div id="feed" style="display:flex;flex-direction:column;gap:12px"></div>
+</main>
+
+<script>window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+  svg: { fontCache: "global" }, startup: { typeset: false } };</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js"></script>
+<script>
+const esc = s => s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+
+// Markdown → HTML for one update. Math is pulled out before marked so it can't mangle backslashes.
+// ponytail: a "$" inside a code block is treated as math too; reports rarely contain code.
+function render(md, dir) {
+  const math = [];
+  md = md.replace(/\$\$([\s\S]+?)\$\$|(?<![\\$])\$(?!\s)((?:\\.|[^$\n])+?)\$/g, (m, d, i) => {
+    math.push(d !== undefined ? "\\[" + d + "\\]" : "\\(" + i + "\\)");
+    return "MATHPH" + (math.length - 1) + "X";
+  });
+  const el = document.createElement("div");
+  el.className = "report";
+  el.innerHTML = marked.parse(md).replace(/MATHPH(\d+)X/g, (_, k) => esc(math[k]));
+  el.querySelector("h1")?.remove();  // the headline is shown in the summary line
+  const rel = v => v && !/^([a-z]+:|\/|#)/i.test(v);
+  el.querySelectorAll("img").forEach(n => { const v = n.getAttribute("src"); if (rel(v)) n.src = dir + "/" + v; });
+  el.querySelectorAll("a").forEach(n => { const v = n.getAttribute("href"); if (rel(v)) n.href = dir + "/" + v; });
+  el.querySelectorAll("table").forEach(t => { const w = document.createElement("div"); w.className = "tablewrap"; t.replaceWith(w); w.append(t); });
+  return el;
+}
+
+async function main() {
+  const status = document.getElementById("status"), feed = document.getElementById("feed");
+  try {
+    // Open questions + todo + notes. Source of truth: db doc open/main (editable here, synced with
+    // reports/open.md by the iterate skill); fallback: the open.md file when db is absent or empty.
+    const open = document.getElementById("open");
+    const fileMd = await fetch("open.md", { cache: "no-cache" }).then(r => r.ok ? r.text() : "").catch(() => "");
+    let body = null, bar = null, shown = fileMd, rev = 0;
+    const paint = md => {
+      shown = md; body?.remove();
+      if (md.trim()) { body = render(md, "."); open.insertBefore(body, bar); open.hidden = false;
+        if (window.MathJax?.typesetPromise) MathJax.typesetPromise([body]).catch(() => {}); }
+    };
+    paint(fileMd);
+    try {
+      const db = await claude.use("db"), user = await claude.use("user");
+      if (db) {
+        const ref = db.doc("open/main");
+        let editing = false;
+        bar = document.createElement("div"); bar.className = "openbar"; open.append(bar);
+        const info = document.createElement("span"); bar.append(info);
+        const canWrite = (await user?.can?.("data.write")) !== false;
+        const btn = document.createElement("button"); btn.textContent = "Edit"; btn.hidden = !canWrite; bar.prepend(btn);
+        const cancel = document.createElement("button"); cancel.textContent = "Cancel"; cancel.hidden = true; bar.append(cancel);
+        const ta = document.createElement("textarea"); ta.id = "openedit"; ta.hidden = true; open.append(ta);
+        const stop = () => { editing = false; cancel.hidden = true; ta.hidden = true; btn.textContent = "Edit"; body && (body.hidden = false); };
+        cancel.onclick = stop;
+        btn.onclick = async () => {
+          if (!editing) { editing = true; ta.value = shown; ta.hidden = false; body && (body.hidden = true); btn.textContent = "Save"; cancel.hidden = false; return; }
+          btn.disabled = true;
+          try { await ref.set({ md: ta.value, rev: rev + 1, updatedBy: "page", updatedAt: new Date().toISOString() }); stop(); }
+          catch (e) { info.textContent = "Could not save (" + (e.code || e.message) + "). Your text is still in the box."; }
+          btn.disabled = false;
+        };
+        ref.onSnapshot(snap => {
+          const d = snap.exists ? snap.data() : null;
+          if (d && typeof d.md === "string") { rev = d.rev || 0; if (!editing) paint(d.md);
+            info.textContent = "Edited " + (d.updatedAt ? new Date(d.updatedAt).toLocaleString() : "") + " by " + (d.updatedBy || "?"); }
+        }, () => {});
+      }
+    } catch (e) { /* db unavailable: the file copy stays */ }
+    const updates = await (await fetch("updates.json", { cache: "no-cache" })).json();
+    if (!updates.length) { status.textContent = "No updates yet. The first one appears here after step 001."; return; }
+    const mds = await Promise.all(updates.map(u =>
+      fetch(u.id + "/report.md", { cache: "no-cache" }).then(r => r.ok ? r.text() : "*This update's text is missing.*")));
+    updates.forEach((u, k) => {
+      const d = document.createElement("details");
+      d.open = k === 0;
+      const s = document.createElement("summary");
+      s.innerHTML = `<span class="meta">Step ${esc(u.id.split("-")[0])} · ${esc(u.date)}</span><span class="headline">${esc(u.title)}</span>`;
+      d.append(s, render(mds[k], u.id));
+      feed.append(d);
+    });
+    status.hidden = true;
+    await MathJax.startup.promise;
+    await MathJax.typesetPromise([open, feed]);
+  } catch (e) {
+    status.textContent = "Could not load the updates (" + e.message + "). Try reloading the page.";
+  }
+}
+main();
+</script>
